@@ -1,2 +1,6 @@
 # Enviroment
-/.env
+/venv
+
+# jupyter checkpoints
+/.ipynb_checkpoints
+config/.ipynb_checkpoints

@@ -1,0 +1,98 @@
+###########################
+# First version of config #
+###########################
+
+########## Notes ##########
+# This config is meant to run on a single A10
+
+#### Config ####
+# The name of the Hugging Face model to be used for fine-tuning
+model_name: "tiiuae/falcon-7b"
+
+# The name of the dataset to use, left blank for custom dataset input
+dataset_name: ""
+
+# Local rank for distributed training, -1 for non-distributed
+local_rank: -1
+
+# Batch size per device during training
+per_device_train_batch_size: 1
+
+# Batch size per device for evaluation
+per_device_eval_batch_size: 1
+
+# Number of steps for gradient accumulation to optimize GPU memory usage
+gradient_accumulation_steps: 8
+
+# Learning rate for the optimizer
+learning_rate: 0.0002
+
+# Maximum gradient norm for gradient clipping, helps in stabilizing training
+max_grad_norm: 0.3
+
+# Weight decay coefficient for regularization
+weight_decay: 0.001
+
+# Maximum sequence length for model inputs
+max_seq_length: 512
+
+# Number of training epochs
+num_train_epochs: 1
+
+# Boolean flag for packing sequences together to reduce padding
+packing: False
+
+# Enables gradient checkpointing to save memory at the cost of slower backward pass
+gradient_checkpointing: True
+
+# Optimizer to use, optimized for 32-bit precision
+optim: "paged_adamw_32bit"
+
+# Type of learning rate scheduler
+lr_scheduler_type: "constant"
+
+# Maximum number of training steps
+max_steps: 10000
+
+# Warmup ratio for learning rate scheduling
+warmup_ratio: 0.03
+
+# Groups sequences by length to minimize padding, improving efficiency
+group_by_length: True
+
+# Frequency of saving the model
+save_steps: 10
+
+# Configuration for PyTorch CUDA memory allocation to optimize GPU memory
+pytorch_cuda_alloc_conf_list:
+  - "heuristic"
+  - "max_split_size_mb512"
+
+# LORA (Low-Rank Adaptation) configuration for efficient fine-tuning
+lora:
+  alpha: 128            # Controls the rank of the adaptation
+  dropout: 0.1          # Dropout rate for LORA layers
+  r: 64                 # Rank of the low-rank matrices
+  targets:              # Layers to apply LORA
+    - "query_key_value"
+    - "dense"
+    - "dense_h_to_4h"
+    - "dense_4h_to_h"
+
+# Enables the use of 4-bit quantization to reduce memory usage
+use_4bit: True
+
+# Flag for using nested quantization, currently not used
+use_nested_quant: False
+
+# Configuration for 4-bit training
+bnb_4bit:
+  compute_dtype: "float16"  # Data type for computation
+  quant_type: "nf4"         # Quantization type
+
+# Flags for using mixed precision training, currently disabled
+fp16: False
+bf16: False
+
+# Frequency of logging training updates
+logging_steps: 10
