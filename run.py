@@ -4,6 +4,7 @@ from dataclasses import field
 from typing import Optional
 from datasets import load_dataset
 from peft import LoraConfig
+import transformers
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -18,10 +19,12 @@ from os.path import abspath
 import os
 from pathlib import Path
 from wasabi import msg
-
+import logging
 
 ex = Experiment()
 ex.add_config('config/config.yaml')
+
+
 
 @ex.capture
 def create_lora_config(lora):
@@ -87,6 +90,9 @@ def main(
     warmup_ratio,
     weight_decay  
 ):
+
+    # logging
+    transformers.utils.logging.disable_progress_bar()
     
     # Setting Pytorch cuda allocation config
     for i in pytorch_cuda_alloc_conf_list: # WORK NEEDED doesn't this overwrite eachother?
@@ -113,15 +119,44 @@ def main(
     )
 
     # Loading dataset
-    
+    with msg.loading(f"Loading dataset <datasetname>"):
+        dataset = load_dataset(
+            'csv', 
+            data_dir="data/cdr_seq2rel",
+            column_names=["input", "relations"],
+            split="train"
+        )
+    msg.good("Loaded dataset <datasetname>")
 
+    # Load tokenizer
+    with msg.loading(f"Initializing tokenizer"):
+        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+        tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
+    msg.good("Initialized Tokenizer")
+    
     # Load model
-    device_map = {"": 0} # FIND OUT WHAT THIS DOES
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        quantization_config=bnb_config,
-        device_map=device_map,
+    with msg.loading(f"Loading model {model_name}"):
+        device_map = {"": 0} # FIND OUT WHAT THIS DOES
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            quantization_config=bnb_config,
+            device_map=device_map,
+        )
+    msg.good(f"Loaded model {model_name}")
+
+    # Initialize Trainer
+    trainer = SFTTrainer(
+        model=model,
+        train_dataset=dataset,
+        peft_config=peft_config,
+        dataset_text_field="input",
+        max_seq_length=max_seq_length,
+        tokenizer=tokenizer,
+        args=training_arguments,
+        packing=packing,
     )
 
     # fine tune script comes here
+
 
