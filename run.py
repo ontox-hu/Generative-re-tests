@@ -21,40 +21,38 @@ from wasabi import msg
 
 
 ex = Experiment()
-ex.add_config('config/config.YAML')
+ex.add_config('config/config.yaml')
 
 @ex.capture
-def create_lora_config(lora_alpha, lora_dropout, lora_r, lora_targets):
+def create_lora_config(lora):
     """
     Creates a Lora config
     """
     peft_config = LoraConfig(
-        lora_alpha=lora_alpha,
-        lora_dropout=lora_dropout,
-        r=lora_r,
+        lora_alpha=lora['alpha'],
+        lora_dropout=lora['dropout'],
+        r=lora['r'],
         bias="none",
         task_type="CAUSAL_LM",
-        target_modules=lora_targets
+        target_modules=lora['targets']
         )
 
     return peft_config
 
 @ex.capture
-def create_bitsandbytes_config(bnb_4bit_compute_dtype, use_4bit, bnb_4bit_quant_type, use_nested_quant):
+def create_bitsandbytes_config(bnb_4bit, use_4bit, use_nested_quant):
     """
     Creates a bitsandbytes config
     """
-    compute_dtype = getattr(torch, bnb_4bit_compute_dtype)
+    compute_dtype = getattr(torch, bnb_4bit['compute_dtype'])
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=use_4bit,
-        bnb_4bit_quant_type=bnb_4bit_quant_type,
-        bnb_4bit_compute_dtype=compute_dtype,
+        bnb_4bit_quant_type=bnb_4bit['quant_type'],
+        bnb_4bit_compute_dtype=bnb_4bit['compute_dtype'],
         bnb_4bit_use_double_quant=use_nested_quant,
     )
     
     return bnb_config
-
-
 
 @ex.automain
 def main(
