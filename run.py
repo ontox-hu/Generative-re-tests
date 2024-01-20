@@ -1,4 +1,5 @@
 from sacred import Experiment
+from sacred.observers import FileStorageObserver
 import torch
 from dataclasses import field
 from typing import Optional
@@ -23,8 +24,7 @@ import logging
 
 ex = Experiment()
 ex.add_config('config/config.yaml')
-
-
+ex.observers.append(FileStorageObserver('sacred_runs'))
 
 @ex.capture
 def create_lora_config(lora):
@@ -57,12 +57,32 @@ def create_bitsandbytes_config(bnb_4bit, use_4bit, use_nested_quant):
     
     return bnb_config
 
+def custom_load_dataset(dataset_vars):
+
+    # Get the dataset file paths
+    dataset_dir_path = Path(abspath("")).joinpath(dataset_vars['dir'])
+    file_paths = dataset_dir_path.glob(f"*.{type}")
+
+    # sacred observer | Log the dataset
+    for path in file_paths:
+        ex.open_resource(path.__str__())
+
+    # Load dataset
+    dataset = load_dataset(
+        dataset_vars['type'], 
+        data_dir=dataset_dir_path.__str__(),
+        column_names=dataset_vars['column_names']
+        )
+
+    return dataset
+
 @ex.automain
 def main(
     bf16,
     # bnb_4bit_compute_dtype,
     # bnb_4bit_quant_type,
-    dataset_name,
+    dataset_vars,
+    output_dir,
     fp16,
     gradient_accumulation_steps,
     gradient_checkpointing,
@@ -102,7 +122,7 @@ def main(
     peft_config = create_lora_config()
     bnb_config = create_bitsandbytes_config()
     training_arguments = TrainingArguments(
-        output_dir="./results", # WORK NEEDED add to config
+        output_dir=output_dir,
         per_device_train_batch_size=per_device_train_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
         optim=optim,
@@ -119,14 +139,11 @@ def main(
     )
 
     # Loading dataset
-    with msg.loading(f"Loading dataset <datasetname>"):
-        dataset = load_dataset(
-            'csv', 
-            data_dir="data/cdr_seq2rel",
-            column_names=["input", "relations"],
-            split="train"
-        )
-    msg.good("Loaded dataset <datasetname>")
+    with msg.loading(f"Loading dataset {dataset_vars['dir']}"):
+        dataset = custom_load_dataset(dataset_vars)
+        dataset_train = dataset['train'].select(range(1,501)) # remove first row that contains column names
+        dataset_eval = dataset['valid'].select(range(1,501)) # remove first row that contains column names
+    msg.good("Loaded dataset {dataset_vars['dir']}")
 
     # Load tokenizer
     with msg.loading(f"Initializing tokenizer"):
@@ -140,7 +157,8 @@ def main(
         device_map = {"": 0} # FIND OUT WHAT THIS DOES
         model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            quantization_config=bnb_config,
+            load_in_8bit=True,
+            # quantization_config=bnb_config,
             device_map=device_map,
         )
     msg.good(f"Loaded model {model_name}")
@@ -148,15 +166,21 @@ def main(
     # Initialize Trainer
     trainer = SFTTrainer(
         model=model,
-        train_dataset=dataset,
+        train_dataset=dataset_train,
+        eval_dataset=dataset_eval
         peft_config=peft_config,
-        dataset_text_field="input",
+        dataset_text_field=dataset_vars['column_names'][0], # could cause error
         max_seq_length=max_seq_length,
         tokenizer=tokenizer,
         args=training_arguments,
         packing=packing,
+        save_total_limit = 2,  
+        save_strategy = "no",  
+        load_best_model_at_end=False
     )
 
-    # fine tune script comes here
+    # Train
+    transformers.utils.logging.enable_progress_bar()
+    trainer.train()
 
 

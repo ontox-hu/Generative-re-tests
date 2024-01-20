@@ -4,3 +4,5 @@
 # jupyter checkpoints
 /.ipynb_checkpoints
 config/.ipynb_checkpoints
+_sources/.ipynb_checkpoints
+data/cdr_seq2rel/.ipynb_checkpoints

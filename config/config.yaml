@@ -9,8 +9,17 @@
 # The name of the Hugging Face model to be used for fine-tuning
 model_name: "tiiuae/falcon-7b"
 
-# The name of the dataset to use, left blank for custom dataset input
-dataset_name: ""
+# The name of the dataset directory
+dataset_vars:
+    type: "csv" #filetype 
+    dir: "data/cdr_seq2rel" #directory to scan for files
+    split: "train" 
+    column_names:
+        - "input"
+        - "relations"
+
+# The directory where the fine-tuned model is saved
+output_dir: "./fine_tune_results"
 
 # Local rank for distributed training, -1 for non-distributed
 local_rank: -1
@@ -63,6 +72,10 @@ group_by_length: True
 # Frequency of saving the model
 save_steps: 10
 
+###############################################
+#               Memory settings               #
+###############################################
+
 # Configuration for PyTorch CUDA memory allocation to optimize GPU memory
 pytorch_cuda_alloc_conf_list:
   - "heuristic"
@@ -80,13 +93,21 @@ lora:
     - "dense_4h_to_h"
 
 # Enables the use of 4-bit quantization to reduce memory usage
-use_4bit: True
+use_4bit: False
 
 # Flag for using nested quantization, currently not used
 use_nested_quant: False
 
 # Configuration for 4-bit training
 bnb_4bit:
+  compute_dtype: "float16"  # Data type for computation
+  quant_type: "nf4"         # Quantization type
+
+# Enables the use of 4-bit quantization to reduce memory usage
+use_8bit: True
+
+# Configuration for 8-bit training
+bnb_8bit:
   compute_dtype: "float16"  # Data type for computation
   quant_type: "nf4"         # Quantization type
 
