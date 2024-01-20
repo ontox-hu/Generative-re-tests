@@ -1,0 +1,110 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.15.0",
+      "numpy==1.24.1",
+      "peft==0.7.0.dev0",
+      "sacred==0.8.5",
+      "torch==2.1.2",
+      "transformers==4.35.2",
+      "trl==0.7.4",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "b9237353007f80bc3473a08dd886636ff8accb5c",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_0c5c361c9c5b81165f330e2a47470762.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/torch/serialization.py\", line 619, in save\n    _save(obj, opened_zipfile, pickle_module, pickle_protocol, _disable_byteorder_record)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/torch/serialization.py\", line 853, in _save\n    zip_file.write_record(name, storage.data_ptr(), num_bytes)\n",
+    "RuntimeError: [enforce fail at inline_container.cc:588] . PytorchStreamWriter failed writing file data/101: file write failed\n",
+    "\nDuring handling of the above exception, another exception occurred:\n\n",
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 180, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/trl/trainer/sft_trainer.py\", line 280, in train\n    output = super().train(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/transformers/trainer.py\", line 1555, in train\n    return inner_training_loop(\n           ^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/transformers/trainer.py\", line 1922, in _inner_training_loop\n    self._maybe_log_save_evaluate(tr_loss, model, trial, epoch, ignore_keys_for_eval)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/transformers/trainer.py\", line 2283, in _maybe_log_save_evaluate\n    self.control = self.callback_handler.on_save(self.args, self.state, self.control)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/transformers/trainer_callback.py\", line 396, in on_save\n    return self.call_event(\"on_save\", args, state, control)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/transformers/trainer_callback.py\", line 407, in call_event\n    result = getattr(callback, event)(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/trl/trainer/utils.py\", line 597, in on_save\n    kwargs[\"model\"].save_pretrained(checkpoint_path)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/peft/peft_model.py\", line 208, in save_pretrained\n    torch.save(output_state_dict, os.path.join(output_dir, WEIGHTS_NAME))\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/torch/serialization.py\", line 618, in save\n    with _open_zipfile_writer(f) as opened_zipfile:\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/torch/serialization.py\", line 466, in __exit__\n    self.file_like.write_end_of_file()\n",
+    "RuntimeError: [enforce fail at inline_container.cc:424] . unexpected pos 4730176 vs 4730064\n"
+  ],
+  "heartbeat": "2024-01-12T16:52:11.268375",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+    "gpus": {
+      "driver_version": "535.54.03",
+      "gpus": [
+        {
+          "model": "NVIDIA A10",
+          "persistence_mode": true,
+          "total_memory": 23028
+        }
+      ]
+    },
+    "hostname": "instance20240112111501",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1049-oracle-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.11.5"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-01-12T15:59:32.944803",
+  "status": "FAILED",
+  "stop_time": "2024-01-12T16:52:11.268977"
+}

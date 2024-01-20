@@ -1,0 +1,95 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.15.0",
+      "numpy==1.24.1",
+      "peft==0.7.0.dev0",
+      "sacred==0.8.5",
+      "torch==2.1.2",
+      "transformers==4.35.2",
+      "trl==0.7.4",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "b9237353007f80bc3473a08dd886636ff8accb5c",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_4c787d8f899aab5e913b9bbc02a4d592.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 171, in main\n    dataset_text_field=dataset_vars[column_names][0], # could cause error\n                                    ^^^^^^^^^^^^\n",
+    "NameError: name 'column_names' is not defined\n"
+  ],
+  "heartbeat": "2024-01-12T15:57:25.658765",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+    "gpus": {
+      "driver_version": "535.54.03",
+      "gpus": [
+        {
+          "model": "NVIDIA A10",
+          "persistence_mode": true,
+          "total_memory": 23028
+        }
+      ]
+    },
+    "hostname": "instance20240112111501",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1049-oracle-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.11.5"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-01-12T15:57:15.060351",
+  "status": "FAILED",
+  "stop_time": "2024-01-12T15:57:25.659396"
+}
