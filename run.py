@@ -167,7 +167,7 @@ def main(
     trainer = SFTTrainer(
         model=model,
         train_dataset=dataset_train,
-        eval_dataset=dataset_eval
+        eval_dataset=dataset_eval,
         peft_config=peft_config,
         dataset_text_field=dataset_vars['column_names'][0], # could cause error
         max_seq_length=max_seq_length,
