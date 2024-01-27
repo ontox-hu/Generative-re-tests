@@ -1,0 +1,97 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.15.0",
+      "numpy==1.24.1",
+      "peft==0.7.0.dev0",
+      "sacred==0.8.5",
+      "torch==2.1.2",
+      "transformers==4.35.2",
+      "trl==0.7.4",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "a7fd070ed3937c0dc39a7a9713e959baca9e782d",
+        "dirty": false,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_54fb6e7ad797e2c2c3100e49d5c82688.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 124, in main\n    training_arguments = TrainingArguments(\n                         ^^^^^^^^^^^^^^^^^^\n",
+    "  File \"<string>\", line 117, in __init__\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.11/site-packages/transformers/training_args.py\", line 1328, in __post_init__\n    raise ValueError(\n",
+    "ValueError: --load_best_model_at_end requires the save and eval strategy to match, but found\n- Evaluation strategy: IntervalStrategy.NO\n- Save strategy: IntervalStrategy.STEPS\n"
+  ],
+  "heartbeat": "2024-01-27T12:34:30.534186",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+    "gpus": {
+      "driver_version": "535.54.03",
+      "gpus": [
+        {
+          "model": "NVIDIA A10",
+          "persistence_mode": true,
+          "total_memory": 23028
+        }
+      ]
+    },
+    "hostname": "cerritos.src-oraclefreeb.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1049-oracle-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.11.5"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-01-27T12:34:30.530953",
+  "status": "FAILED",
+  "stop_time": "2024-01-27T12:34:30.534879"
+}
