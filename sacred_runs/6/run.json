@@ -1,0 +1,89 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.15.0",
+      "numpy==1.24.1",
+      "peft==0.7.0.dev0",
+      "sacred==0.8.5",
+      "torch==2.1.2",
+      "transformers==4.35.2",
+      "trl==0.7.4",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "4d98f420980334ba89671d278116f09c1fdaa057",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_6817f54522b791fa7fa0f8d3f9fbd970.py"
+      ]
+    ]
+  },
+  "heartbeat": "2024-01-21T21:46:21.440889",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+    "gpus": {
+      "driver_version": "535.54.03",
+      "gpus": [
+        {
+          "model": "NVIDIA A10",
+          "persistence_mode": true,
+          "total_memory": 23028
+        }
+      ]
+    },
+    "hostname": "cerritos.src-oraclefreeb.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1049-oracle-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.11.5"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-01-21T00:15:34.210202",
+  "status": "COMPLETED",
+  "stop_time": "2024-01-21T21:46:21.435622"
+}
