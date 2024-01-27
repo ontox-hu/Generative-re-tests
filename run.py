@@ -23,7 +23,7 @@ from wasabi import msg
 import logging
 
 ex = Experiment()
-ex.add_config('config/config.yaml')
+ex.add_config('config/config_testing.yaml')
 ex.observers.append(FileStorageObserver('sacred_runs'))
 
 @ex.capture
@@ -136,13 +136,16 @@ def main(
         warmup_ratio=warmup_ratio,
         group_by_length=group_by_length,
         lr_scheduler_type=lr_scheduler_type,
+        save_total_limit=2,
+        save_strategy='steps',
+        load_best_model_at_end=True
     )
 
     # Loading dataset
     with msg.loading(f"Loading dataset {dataset_vars['dir']}"):
         dataset = custom_load_dataset(dataset_vars)
         dataset_train = dataset['train'].select(range(1,501)) # remove first row that contains column names
-        dataset_eval = dataset['valid'].select(range(1,501)) # remove first row that contains column names
+        dataset_eval = dataset['validation'].select(range(1,501)) # remove first row that contains column names
     msg.good("Loaded dataset {dataset_vars['dir']}")
 
     # Load tokenizer
@@ -173,14 +176,12 @@ def main(
         max_seq_length=max_seq_length,
         tokenizer=tokenizer,
         args=training_arguments,
-        packing=packing,
-        save_total_limit = 2,  
-        save_strategy = "no",  
-        load_best_model_at_end=False
+        packing=packing
     )
 
     # Train
     transformers.utils.logging.enable_progress_bar()
     trainer.train()
+    trainer.save_model()
 
 
