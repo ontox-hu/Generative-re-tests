@@ -142,9 +142,9 @@ def main(
         save_total_limit=2,
         save_strategy='steps',
         load_best_model_at_end=True,
-        do_eval,
-        evaluation_strategy,
-        eval_steps
+        do_eval=do_eval,
+        evaluation_strategy=evaluation_strategy,
+        eval_steps=eval_steps
     )
 
     # Loading dataset
