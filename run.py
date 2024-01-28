@@ -108,7 +108,10 @@ def main(
     # use_4bit,
     # use_nested_quant,
     warmup_ratio,
-    weight_decay  
+    weight_decay,
+    do_eval,
+    evaluation_strategy,
+    eval_steps
 ):
 
     # logging
@@ -138,7 +141,10 @@ def main(
         lr_scheduler_type=lr_scheduler_type,
         save_total_limit=2,
         save_strategy='steps',
-        load_best_model_at_end=True
+        load_best_model_at_end=True,
+        do_eval,
+        evaluation_strategy,
+        eval_steps
     )
 
     # Loading dataset
