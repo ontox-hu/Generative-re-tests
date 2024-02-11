@@ -188,6 +188,6 @@ def main(
     # Train
     transformers.utils.logging.enable_progress_bar()
     trainer.train()
-    trainer.save_model()
+    trainer.save_model(output_dir: "fine_tune_results/final_model")
 
 
