@@ -7,7 +7,7 @@
 
 #### Config ####
 # The name of the Hugging Face model to be used for fine-tuning
-model_name: "tiiuae/falcon-7b"
+model_name: "google/t5-v1_1-base"
 
 # The name of the dataset directory
 dataset_vars:
@@ -45,11 +45,26 @@ weight_decay: 0.001
 # Maximum sequence length for model inputs
 max_seq_length: 512
 
+# Maximun sequence length for model output
+max_target_length: 512
+
 # Number of training epochs
 num_train_epochs: 0.5
 
 # Boolean flag for packing sequences together to reduce padding
 packing: False
+
+# Wheter to apply padding to can be either: True or 'longest'/ max_length / False or 'do_not_pad'
+padding: True
+
+# Wheter to replace the pad tokens with -100 so that they are ignored when calculating the loss
+ignore_pad_token_for_loss: True
+
+# Shortens the input / target sequence to fit the max_seq_length or max_target_length
+truncation: True
+
+# Wheter to predict with the generate function. should be true for Seq2Seq models
+predict_with_generate: True
 
 # Enables gradient checkpointing to save memory at the cost of slower backward pass
 gradient_checkpointing: True
@@ -90,16 +105,6 @@ pytorch_cuda_alloc_conf_list:
   - "heuristic"
   - "max_split_size_mb512"
 
-# LORA (Low-Rank Adaptation) configuration for efficient fine-tuning
-lora:
-  alpha: 128            # Controls the rank of the adaptation
-  dropout: 0.1          # Dropout rate for LORA layers
-  r: 64                 # Rank of the low-rank matrices
-  targets:              # Layers to apply LORA
-    - "query_key_value"
-    - "dense"
-    - "dense_h_to_4h"
-    - "dense_4h_to_h"
 
 # Enables the use of 4-bit quantization to reduce memory usage
 use_4bit: False
@@ -107,13 +112,8 @@ use_4bit: False
 # Flag for using nested quantization, currently not used
 use_nested_quant: False
 
-# Configuration for 4-bit training
-bnb_4bit:
-  compute_dtype: "float16"  # Data type for computation
-  quant_type: "nf4"         # Quantization type
-
-# Enables the use of 4-bit quantization to reduce memory usage
-use_8bit: True
+# Enables the use of 8-bit quantization to reduce memory usage
+use_8bit: False
 
 # Configuration for 8-bit training
 bnb_8bit:
