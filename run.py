@@ -1,61 +1,73 @@
+import os
+import logging
+from os.path import abspath
+from pathlib import Path
 from sacred import Experiment
 from sacred.observers import FileStorageObserver
-import torch
 from dataclasses import field
 from typing import Optional
 from datasets import load_dataset
-from peft import LoraConfig
 import transformers
+import torch
 from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-    HfArgumentParser,
-    AutoTokenizer,
-    TrainingArguments,
+    T5Tokenizer
+    T5ForConditionalGeneration
+    Seq2SeqTrainingArguments,
+    Seq2SeqTrainer,
+    DataCollatorForSeq2Seq
 )
-from peft.tuners.lora import LoraLayer
-from trl import SFTTrainer
-from os.path import abspath
-import os
-from pathlib import Path
 from wasabi import msg
-import logging
 
 ex = Experiment()
 ex.add_config('config/config_testing.yaml')
 ex.observers.append(FileStorageObserver('sacred_runs'))
 
-@ex.capture
-def create_lora_config(lora):
-    """
-    Creates a Lora config
-    """
-    peft_config = LoraConfig(
-        lora_alpha=lora['alpha'],
-        lora_dropout=lora['dropout'],
-        r=lora['r'],
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=lora['targets']
+def preprocess_function(examples):
+    '''
+    This function takes a dataset of input and target sequences.
+    meant to be used with the dataset.map() function
+    '''
+
+    text_column = dataset_vars['column_names'][0]
+    rel_column = dataset_vars['column_names'][1]
+
+    # Split input and target
+    inputs, targets = [], []
+    for i in range(len(examples[text_column])):
+        if examples[text_column][i] and examples[rel_column][i]: # remove pairs where one is None
+            inputs.append(examples[text_column][i])
+            targets.append(examples[rel_column][i])
+
+    # Tokenize the input
+    model_inputs = tokenizer(
+        inputs, 
+        max_length=max_seq_length, 
+        padding=padding, 
+        truncation=truncation, 
+        return_tensors='pt'
+    )
+
+    # Tokenize the target sequence
+    with tokenizer.as_target_tokenizer():
+        labels = tokenizer(
+            targets, 
+            max_length=max_seq_length, 
+            padding=padding, 
+            truncation=truncation,  
+            return_tensors='pt'
         )
 
-    return peft_config
+    # Replace pad tokens with -100 so they don't contribute too the loss
+    if ignore_pad_token_for_loss:
+        labels["input_ids"] = [
+                    [(l if l != tokenizer.pad_token_id else -100) for l in label] for label in labels["input_ids"]
+                ]
 
-@ex.capture
-def create_bitsandbytes_config(bnb_4bit, use_4bit, use_nested_quant):
-    """
-    Creates a bitsandbytes config
-    """
-    compute_dtype = getattr(torch, bnb_4bit['compute_dtype'])
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=use_4bit,
-        bnb_4bit_quant_type=bnb_4bit['quant_type'],
-        bnb_4bit_compute_dtype=bnb_4bit['compute_dtype'],
-        bnb_4bit_use_double_quant=use_nested_quant,
-    )
-    
-    return bnb_config
+    # Add tokenized target text to output
+    model_inputs["labels"] = labels["input_ids"]
+
+    return model_inputs
+        
 
 def custom_load_dataset(dataset_vars):
 
@@ -118,13 +130,13 @@ def main(
     transformers.utils.logging.disable_progress_bar()
     
     # Setting Pytorch cuda allocation config
-    for i in pytorch_cuda_alloc_conf_list: # WORK NEEDED doesn't this overwrite eachother?
-        os.environ["PYTORCH_CUDA_ALLOC_CONF"]=i
+    # for i in pytorch_cuda_alloc_conf_list: # WORK NEEDED doesn't this overwrite eachother?
+    #     os.environ["PYTORCH_CUDA_ALLOC_CONF"]=i
 
-    # Setting up
-    peft_config = create_lora_config()
-    bnb_config = create_bitsandbytes_config()
-    training_arguments = TrainingArguments(
+    # Setting up 
+    # Note to self: if all of these parameters are defined with the same name in the config i 
+    # could replace this with Seq2SeqTrainingArguments() because of the variable injections of sacred.
+    training_arguments = Seq2SeqTrainingArguments(
         output_dir=output_dir,
         per_device_train_batch_size=per_device_train_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
@@ -139,6 +151,7 @@ def main(
         warmup_ratio=warmup_ratio,
         group_by_length=group_by_length,
         lr_scheduler_type=lr_scheduler_type,
+        predict_with_generate=True
         save_total_limit=2,
         save_strategy='steps',
         load_best_model_at_end=True,
@@ -148,41 +161,67 @@ def main(
     )
 
     # Loading dataset
-    with msg.loading(f"Loading dataset {dataset_vars['dir']}"):
+    with msg.loading(f"Loading dataset from:{dataset_vars['dir']}"):
         dataset = custom_load_dataset(dataset_vars)
         dataset_train = dataset['train'].select(range(1,501)) # remove first row that contains column names
         dataset_eval = dataset['validation'].select(range(1,501)) # remove first row that contains column names
-    msg.good("Loaded dataset {dataset_vars['dir']}")
+    msg.good(f"Loaded dataset from:{dataset_vars['dir']}")
+
+    # Load model config
 
     # Load tokenizer
     with msg.loading(f"Initializing tokenizer"):
-        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-        tokenizer.pad_token = tokenizer.eos_token
-        tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
+        tokenizer = T5Tokenizer.from_pretrained(model_name, trust_remote_code=True)
     msg.good("Initialized Tokenizer")
     
     # Load model
     with msg.loading(f"Loading model {model_name}"):
         device_map = {"": 0} # FIND OUT WHAT THIS DOES
-        model = AutoModelForCausalLM.from_pretrained(
+        model = T5ForConditionalGeneration.from_pretrained(
             model_name,
-            load_in_8bit=True,
-            # quantization_config=bnb_config,
+            load_in_8bit=use_8bit,
             device_map=device_map,
         )
     msg.good(f"Loaded model {model_name}")
 
+    # Apply preprocessing
+    with msg.loading(f"Preprocessing dataset..."):
+        # Preprocess training dataset
+        train_dataset = dataset_train.map(
+            preprocess_function,
+            batched=True,
+            desc="Running tokenizer on train dataset"
+        )
+
+        # Preprocess evaluation dataset
+        eval_dataset = dataset_eval.map(
+            preprocess_function,
+            batched=True,
+            desc="Running tokenizer on train dataset"
+        )
+    msg.good(f"Preprocessed dataset!")
+
+    # Create Seq2Seq data collator to overwrite the default datacollator
+    label_pad_token_id = -100 if data_args.ignore_pad_token_for_loss else tokenizer.pad_token_id
+    data_collator = DataCollatorForSeq2Seq(
+        tokenizer,
+        model=model,
+        label_pad_token_id=label_pad_token_id,
+        pad_to_multiple_of=8 if fp16 else None,
+    )
+
     # Initialize Trainer
-    trainer = SFTTrainer(
+    trainer = Seq2SeqTrainer(
         model=model,
         train_dataset=dataset_train,
         eval_dataset=dataset_eval,
-        peft_config=peft_config,
-        dataset_text_field=dataset_vars['column_names'][0], # could cause error
-        max_seq_length=max_seq_length,
         tokenizer=tokenizer,
+        data_collator=data_collator
+        # compute_metrics= # Implement this function
         args=training_arguments,
         packing=packing
+        #dataset_text_field=dataset_vars['column_names'][0], # could cause error
+        #max_seq_length=max_seq_length,
     )
 
     # Train
