@@ -8,10 +8,12 @@ from dataclasses import field
 from typing import Optional
 from datasets import load_dataset
 import transformers
+import evaluate
 import torch
+import numpy as np
 from transformers import (
-    T5Tokenizer
-    T5ForConditionalGeneration
+    T5Tokenizer,
+    T5ForConditionalGeneration,
     Seq2SeqTrainingArguments,
     Seq2SeqTrainer,
     DataCollatorForSeq2Seq
@@ -22,12 +24,44 @@ ex = Experiment()
 ex.add_config('config/config_testing.yaml')
 ex.observers.append(FileStorageObserver('sacred_runs'))
 
-def preprocess_function(examples):
+def postprocess_text(preds, labels):
+        preds = [pred.strip() for pred in preds]
+        labels = [label.strip() for label in labels]
+
+        # rougeLSum expects newline after each sentence
+        # preds = ["\n".join(nltk.sent_tokenize(pred)) for pred in preds]
+        # labels = ["\n".join(nltk.sent_tokenize(label)) for label in labels]
+
+        return preds, labels
+
+@ex.capture
+def compute_metrics(eval_preds):
+    preds, labels = eval_preds
+    if isinstance(preds, tuple):
+        preds = preds[0]
+        
+    # Replace -100s used for padding as we can't decode them
+    preds = np.where(preds != -100, preds, tokenizer.pad_token_id)
+    decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+    # Some simple post-processing
+    decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+
+    result = metric.compute(predictions=decoded_preds, rouge_types=['rouge1', 'rouge2'], references=decoded_labels, use_stemmer=False)
+    result = {k: round(v * 100, 4) for k, v in result.items()} # rounds all metric values to 4 numvers behind the comma and make them percentages
+    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in preds]
+    result["gen_len"] = np.mean(prediction_lens) # mean length of the generated sequences
+    return result
+
+@ex.capture
+def preprocess_function(examples, dataset_vars, max_seq_length, padding, truncation, ignore_pad_token_for_loss):
     '''
     This function takes a dataset of input and target sequences.
     meant to be used with the dataset.map() function
     '''
-
+    
     text_column = dataset_vars['column_names'][0]
     rel_column = dataset_vars['column_names'][1]
 
@@ -91,8 +125,6 @@ def custom_load_dataset(dataset_vars):
 @ex.automain
 def main(
     bf16,
-    # bnb_4bit_compute_dtype,
-    # bnb_4bit_quant_type,
     dataset_vars,
     output_dir,
     fp16,
@@ -102,9 +134,6 @@ def main(
     learning_rate,
     local_rank,
     logging_steps,
-    # lora_alpha,
-    # lora_dropout,
-    # lora_r,
     lr_scheduler_type,
     max_grad_norm,
     max_seq_length,
@@ -112,22 +141,23 @@ def main(
     model_name,
     num_train_epochs,
     optim,
-    packing,
     per_device_eval_batch_size,
     per_device_train_batch_size,
     pytorch_cuda_alloc_conf_list,
     save_steps,
-    # use_4bit,
-    # use_nested_quant,
+    use_8bit,
     warmup_ratio,
     weight_decay,
     do_eval,
     evaluation_strategy,
-    eval_steps
+    eval_steps,
+    ignore_pad_token_for_loss
 ):
 
     # logging
     transformers.utils.logging.disable_progress_bar()
+
+    
     
     # Setting Pytorch cuda allocation config
     # for i in pytorch_cuda_alloc_conf_list: # WORK NEEDED doesn't this overwrite eachother?
@@ -151,13 +181,14 @@ def main(
         warmup_ratio=warmup_ratio,
         group_by_length=group_by_length,
         lr_scheduler_type=lr_scheduler_type,
-        predict_with_generate=True
+        predict_with_generate=True,
         save_total_limit=2,
         save_strategy='steps',
         load_best_model_at_end=True,
         do_eval=do_eval,
         evaluation_strategy=evaluation_strategy,
-        eval_steps=eval_steps
+        eval_steps=eval_steps,
+        remove_unused_columns=False
     )
 
     # Loading dataset
@@ -167,10 +198,9 @@ def main(
         dataset_eval = dataset['validation'].select(range(1,501)) # remove first row that contains column names
     msg.good(f"Loaded dataset from:{dataset_vars['dir']}")
 
-    # Load model config
-
     # Load tokenizer
     with msg.loading(f"Initializing tokenizer"):
+        global tokenizer #Otherwise the tokenizer won'te be acessible from within ohter functions
         tokenizer = T5Tokenizer.from_pretrained(model_name, trust_remote_code=True)
     msg.good("Initialized Tokenizer")
     
@@ -184,7 +214,7 @@ def main(
         )
     msg.good(f"Loaded model {model_name}")
 
-    # Apply preprocessing
+    ### Apply preprocessing
     with msg.loading(f"Preprocessing dataset..."):
         # Preprocess training dataset
         train_dataset = dataset_train.map(
@@ -201,8 +231,11 @@ def main(
         )
     msg.good(f"Preprocessed dataset!")
 
+    # Load metric
+    metric = evaluate.load("rouge")
+
     # Create Seq2Seq data collator to overwrite the default datacollator
-    label_pad_token_id = -100 if data_args.ignore_pad_token_for_loss else tokenizer.pad_token_id
+    label_pad_token_id = -100 if ignore_pad_token_for_loss else tokenizer.pad_token_id
     data_collator = DataCollatorForSeq2Seq(
         tokenizer,
         model=model,
@@ -216,17 +249,14 @@ def main(
         train_dataset=dataset_train,
         eval_dataset=dataset_eval,
         tokenizer=tokenizer,
-        data_collator=data_collator
-        # compute_metrics= # Implement this function
-        args=training_arguments,
-        packing=packing
-        #dataset_text_field=dataset_vars['column_names'][0], # could cause error
-        #max_seq_length=max_seq_length,
+        data_collator=data_collator,
+        compute_metrics=compute_metrics,
+        args=training_arguments
     )
 
     # Train
     transformers.utils.logging.enable_progress_bar()
     trainer.train()
-    trainer.save_model(output_dir: "fine_tune_results/final_model")
+    trainer.save_model(output_dir="fine_tune_results/final_model")
 
 

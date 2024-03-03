@@ -25,13 +25,13 @@ output_dir: "./fine_tune_results"
 local_rank: -1
 
 # Batch size per device during training
-per_device_train_batch_size: 1
+per_device_train_batch_size: 4
 
 # Batch size per device for evaluation
-per_device_eval_batch_size: 1
+per_device_eval_batch_size: 4
 
 # Number of steps for gradient accumulation to optimize GPU memory usage
-gradient_accumulation_steps: 8
+gradient_accumulation_steps: 4
 
 # Learning rate for the optimizer
 learning_rate: 0.0002
@@ -49,10 +49,7 @@ max_seq_length: 512
 max_target_length: 512
 
 # Number of training epochs
-num_train_epochs: 0.5
-
-# Boolean flag for packing sequences together to reduce padding
-packing: False
+num_train_epochs: 1
 
 # Wheter to apply padding to can be either: True or 'longest'/ max_length / False or 'do_not_pad'
 padding: True
@@ -76,13 +73,13 @@ optim: "paged_adamw_32bit"
 lr_scheduler_type: "constant"
 
 # Maximum number of training steps
-max_steps: 12
+max_steps: 32
 
 # Warmup ratio for learning rate scheduling
 warmup_ratio: 0.03
 
 # Groups sequences by length to minimize padding, improving efficiency
-group_by_length: True
+group_by_length: False
 
 # Frequency of saving the model
 save_steps: 4
@@ -105,22 +102,10 @@ pytorch_cuda_alloc_conf_list:
   - "heuristic"
   - "max_split_size_mb512"
 
-
-# Enables the use of 4-bit quantization to reduce memory usage
-use_4bit: False
-
-# Flag for using nested quantization, currently not used
-use_nested_quant: False
-
 # Enables the use of 8-bit quantization to reduce memory usage
 use_8bit: False
 
-# Configuration for 8-bit training
-bnb_8bit:
-  compute_dtype: "float16"  # Data type for computation
-  quant_type: "nf4"         # Quantization type
-
-# Flags for using mixed precision training, currently disabled
+# Flags for using mixed precision training
 fp16: False
 bf16: False
 
