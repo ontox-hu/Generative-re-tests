@@ -7,7 +7,7 @@
 
 #### Config ####
 # The name of the Hugging Face model to be used for fine-tuning
-model_name: "google-t5/t5-3b"
+model_name: "google-t5/t5-large"
 
 # The name of the dataset directory
 dataset_vars:
