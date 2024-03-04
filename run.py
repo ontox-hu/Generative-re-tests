@@ -21,7 +21,7 @@ from transformers import (
 from wasabi import msg
 
 ex = Experiment()
-ex.add_config('config/config_testing.yaml')
+ex.add_config('config/config_T5-3b_cdr.yaml')
 ex.observers.append(FileStorageObserver('sacred_runs'))
 
 def postprocess_text(preds, labels):
