@@ -201,7 +201,7 @@ def main(
     # Load tokenizer
     with msg.loading(f"Initializing tokenizer"):
         global tokenizer #Otherwise the tokenizer won'te be acessible from within ohter functions
-        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, legacy=False)
+        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, legacy=False, model_max_length=max_seq_length)
     msg.good("Initialized Tokenizer")
     
     # Load model
