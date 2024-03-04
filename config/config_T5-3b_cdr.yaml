@@ -25,13 +25,13 @@ output_dir: "./fine_tune_results"
 local_rank: -1
 
 # Batch size per device during training
-per_device_train_batch_size: 8
+per_device_train_batch_size: 2
 
 # Batch size per device for evaluation
-per_device_eval_batch_size: 8
+per_device_eval_batch_size: 2
 
 # Number of steps for gradient accumulation to optimize GPU memory usage
-gradient_accumulation_steps: 8
+gradient_accumulation_steps: 4
 
 # Learning rate for the optimizer
 learning_rate: 0.0002
@@ -103,7 +103,7 @@ pytorch_cuda_alloc_conf_list:
   - "max_split_size_mb512"
 
 # Enables the use of 8-bit quantization to reduce memory usage
-use_8bit: False
+use_8bit: True
 
 # Flags for using mixed precision training
 fp16: False
