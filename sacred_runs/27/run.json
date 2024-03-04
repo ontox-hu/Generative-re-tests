@@ -1,0 +1,102 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.17.1",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.2.1",
+      "transformers==4.38.1",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "f472c895f46c1b2f521724555af2e89b5d55288d",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_a7aca7b6755ce23f4fed735b064f8f6e.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 258, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 1624, in train\n    return inner_training_loop(\n           ^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 2029, in _inner_training_loop\n    self._maybe_log_save_evaluate(tr_loss, grad_norm, model, trial, epoch, ignore_keys_for_eval)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 2412, in _maybe_log_save_evaluate\n    metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer_seq2seq.py\", line 166, in evaluate\n    return super().evaluate(eval_dataset, ignore_keys=ignore_keys, metric_key_prefix=metric_key_prefix)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 3229, in evaluate\n    output = eval_loop(\n             ^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 3520, in evaluation_loop\n    metrics = self.compute_metrics(EvalPrediction(predictions=all_preds, label_ids=all_labels))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 52, in compute_metrics\n    result = metric.compute(predictions=decoded_preds, rouge_types=['rouge1', 'rouge2'], references=decoded_labels, use_stemmer=False)\n             ^^^^^^\n",
+    "NameError: name 'metric' is not defined\n"
+  ],
+  "heartbeat": "2024-03-04T17:06:16.048405",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A10",
+          "persistence_mode": false,
+          "total_memory": 23028
+        }
+      ]
+    },
+    "hostname": "jupyternoteboo.src-oraclefreeb.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1052-oracle-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.12.1"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-03-04T17:05:18.944081",
+  "status": "FAILED",
+  "stop_time": "2024-03-04T17:06:16.049056"
+}

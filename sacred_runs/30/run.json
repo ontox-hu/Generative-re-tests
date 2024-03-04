@@ -1,0 +1,114 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.17.1",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.2.1",
+      "transformers==4.38.1",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "86503d46462e7e3933f7007411d32d674ab68cfc",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_5262bc3412e6f2df2df7ee8be360809d.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/utils/_errors.py\", line 304, in hf_raise_for_status\n    response.raise_for_status()\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/requests/models.py\", line 1021, in raise_for_status\n    raise HTTPError(http_error_msg, response=self)\n",
+    "requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/google/t5-3b/resolve/main/tokenizer_config.json\n",
+    "\nThe above exception was the direct cause of the following exception:\n\n",
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/utils/hub.py\", line 398, in cached_file\n    resolved_file = hf_hub_download(\n                    ^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py\", line 118, in _inner_fn\n    return fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py\", line 1403, in hf_hub_download\n    raise head_call_error\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py\", line 1261, in hf_hub_download\n    metadata = get_hf_file_metadata(\n               ^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py\", line 118, in _inner_fn\n    return fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py\", line 1667, in get_hf_file_metadata\n    r = _request_wrapper(\n        ^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py\", line 385, in _request_wrapper\n    response = _request_wrapper(\n               ^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py\", line 409, in _request_wrapper\n    hf_raise_for_status(response)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/huggingface_hub/utils/_errors.py\", line 352, in hf_raise_for_status\n    raise RepositoryNotFoundError(message, response) from e\n",
+    "huggingface_hub.utils._errors.RepositoryNotFoundError: 401 Client Error. (Request ID: Root=1-65e63585-21e6fc800221e5713ffe2ef9;c4bed980-b052-47d8-b2a6-4dba976c898c)\n\nRepository Not Found for url: https://huggingface.co/google/t5-3b/resolve/main/tokenizer_config.json.\nPlease make sure you specified the correct `repo_id` and `repo_type`.\nIf you are trying to access a private or gated repo, make sure you are authenticated.\nInvalid username or password.\n",
+    "\nThe above exception was the direct cause of the following exception:\n\n",
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 204, in main\n    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, legacy=False)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py\", line 767, in from_pretrained\n    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py\", line 600, in get_tokenizer_config\n    resolved_config_file = cached_file(\n                           ^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/utils/hub.py\", line 421, in cached_file\n    raise EnvironmentError(\n",
+    "OSError: google/t5-3b is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'\nIf this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`\n"
+  ],
+  "heartbeat": "2024-03-04T20:56:37.309695",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A10",
+          "persistence_mode": false,
+          "total_memory": 23028
+        }
+      ]
+    },
+    "hostname": "jupyternoteboo.src-oraclefreeb.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1052-oracle-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.12.1"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-03-04T20:56:36.746191",
+  "status": "FAILED",
+  "stop_time": "2024-03-04T20:56:37.310583"
+}

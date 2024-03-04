@@ -1,0 +1,103 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.17.1",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.2.1",
+      "transformers==4.38.1",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "7f7fb84f0fe9b00b2210565ea5b2b7cdc20de6a3",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_79664604807851cff7d5bd5de5b280d0.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 259, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 1624, in train\n    return inner_training_loop(\n           ^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 1928, in _inner_training_loop\n    for step, inputs in enumerate(epoch_iterator):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/accelerate/data_loader.py\", line 452, in __iter__\n    current_batch = next(dataloader_iter)\n                    ^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/torch/utils/data/dataloader.py\", line 631, in __next__\n    data = self._next_data()\n           ^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/torch/utils/data/dataloader.py\", line 675, in _next_data\n    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/torch/utils/data/_utils/fetch.py\", line 54, in fetch\n    return self.collate_fn(data)\n           ^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/data/data_collator.py\", line 612, in __call__\n    features = pad_without_fast_tokenizer_warning(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/data/data_collator.py\", line 66, in pad_without_fast_tokenizer_warning\n    padded = tokenizer.pad(*pad_args, **pad_kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/tokenization_utils_base.py\", line 3245, in pad\n    raise ValueError(\n",
+    "ValueError: You should supply an encoding or a list of encodings to this method that includes input_ids, but you provided ['input', 'relations']\n"
+  ],
+  "heartbeat": "2024-03-03T21:16:22.827023",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A10",
+          "persistence_mode": false,
+          "total_memory": 23028
+        }
+      ]
+    },
+    "hostname": "jupyternoteboo.src-oraclefreeb.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1052-oracle-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.12.1"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-03-03T21:16:15.211808",
+  "status": "FAILED",
+  "stop_time": "2024-03-03T21:16:22.827840"
+}

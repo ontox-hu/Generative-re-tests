@@ -1,0 +1,99 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.17.1",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.2.1",
+      "transformers==4.38.1",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "7f7fb84f0fe9b00b2210565ea5b2b7cdc20de6a3",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_7765447f3e4c62e72bd3214385c1cb0d.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 216, in main\n    train_dataset = dataset_train.map(\n                    ^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/datasets/arrow_dataset.py\", line 593, in wrapper\n    out: Union[\"Dataset\", \"DatasetDict\"] = func(self, *args, **kwargs)\n                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/datasets/arrow_dataset.py\", line 558, in wrapper\n    out: Union[\"Dataset\", \"DatasetDict\"] = func(self, *args, **kwargs)\n                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/datasets/arrow_dataset.py\", line 3105, in map\n    for rank, done, content in Dataset._map_single(**dataset_kwargs):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/datasets/arrow_dataset.py\", line 3482, in _map_single\n    batch = apply_function_on_filtered_inputs(\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/datasets/arrow_dataset.py\", line 3361, in apply_function_on_filtered_inputs\n    processed_inputs = function(*fn_args, *additional_args, **fn_kwargs)\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "TypeError: preprocess_function() missing 1 required positional argument: 'dataset_vars'\n"
+  ],
+  "heartbeat": "2024-03-03T20:47:21.094846",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A10",
+          "persistence_mode": false,
+          "total_memory": 23028
+        }
+      ]
+    },
+    "hostname": "jupyternoteboo.src-oraclefreeb.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1052-oracle-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.12.1"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-03-03T20:47:19.095022",
+  "status": "FAILED",
+  "stop_time": "2024-03-03T20:47:21.095619"
+}

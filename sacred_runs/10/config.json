@@ -1,0 +1,47 @@
+{
+  "bf16": false,
+  "dataset_vars": {
+    "column_names": [
+      "input",
+      "relations"
+    ],
+    "dir": "data/cdr_seq2rel",
+    "split": "train",
+    "type": "csv"
+  },
+  "do_eval": true,
+  "eval_steps": 4,
+  "evaluation_strategy": "steps",
+  "fp16": false,
+  "gradient_accumulation_steps": 4,
+  "gradient_checkpointing": true,
+  "group_by_length": true,
+  "ignore_pad_token_for_loss": true,
+  "learning_rate": 0.0002,
+  "local_rank": -1,
+  "logging_steps": 10,
+  "lr_scheduler_type": "constant",
+  "max_grad_norm": 0.3,
+  "max_seq_length": 512,
+  "max_steps": 32,
+  "max_target_length": 512,
+  "model_name": "google/t5-v1_1-base",
+  "num_train_epochs": 1,
+  "optim": "paged_adamw_32bit",
+  "output_dir": "./fine_tune_results",
+  "packing": false,
+  "padding": true,
+  "per_device_eval_batch_size": 4,
+  "per_device_train_batch_size": 4,
+  "predict_with_generate": true,
+  "pytorch_cuda_alloc_conf_list": [
+    "heuristic",
+    "max_split_size_mb512"
+  ],
+  "save_steps": 4,
+  "seed": 997863179,
+  "truncation": true,
+  "use_8bit": false,
+  "warmup_ratio": 0.03,
+  "weight_decay": 0.001
+}
