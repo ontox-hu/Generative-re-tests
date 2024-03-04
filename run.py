@@ -12,7 +12,7 @@ import evaluate
 import torch
 import numpy as np
 from transformers import (
-    T5Tokenizer,
+    AutoTokenizer,
     T5ForConditionalGeneration,
     Seq2SeqTrainingArguments,
     Seq2SeqTrainer,
@@ -82,14 +82,13 @@ def preprocess_function(examples, dataset_vars, max_seq_length, padding, truncat
     )
 
     # Tokenize the target sequence
-    with tokenizer.as_target_tokenizer():
-        labels = tokenizer(
-            targets, 
-            max_length=max_seq_length, 
-            padding=padding, 
-            truncation=truncation,  
-            return_tensors='pt'
-        )
+    labels = tokenizer(
+        text_target=targets, 
+        max_length=max_seq_length, 
+        padding=padding, 
+        truncation=truncation,  
+        return_tensors='pt'
+    )
 
     # Replace pad tokens with -100 so they don't contribute too the loss
     if ignore_pad_token_for_loss:
@@ -188,7 +187,8 @@ def main(
         do_eval=do_eval,
         evaluation_strategy=evaluation_strategy,
         eval_steps=eval_steps,
-        remove_unused_columns=False
+        remove_unused_columns=True,
+        generation_max_length=128
     )
 
     # Loading dataset
@@ -201,7 +201,7 @@ def main(
     # Load tokenizer
     with msg.loading(f"Initializing tokenizer"):
         global tokenizer #Otherwise the tokenizer won'te be acessible from within ohter functions
-        tokenizer = T5Tokenizer.from_pretrained(model_name, trust_remote_code=True)
+        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, legacy=False)
     msg.good("Initialized Tokenizer")
     
     # Load model
@@ -217,14 +217,14 @@ def main(
     ### Apply preprocessing
     with msg.loading(f"Preprocessing dataset..."):
         # Preprocess training dataset
-        train_dataset = dataset_train.map(
+        dataset_train = dataset_train.map(
             preprocess_function,
             batched=True,
             desc="Running tokenizer on train dataset"
         )
 
         # Preprocess evaluation dataset
-        eval_dataset = dataset_eval.map(
+        dataset_eval = dataset_eval.map(
             preprocess_function,
             batched=True,
             desc="Running tokenizer on train dataset"
@@ -232,6 +232,7 @@ def main(
     msg.good(f"Preprocessed dataset!")
 
     # Load metric
+    global metric # Otherwise the metric object won't be accessible from within compute_metric()
     metric = evaluate.load("rouge")
 
     # Create Seq2Seq data collator to overwrite the default datacollator
