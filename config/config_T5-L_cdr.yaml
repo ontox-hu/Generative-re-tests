@@ -46,7 +46,7 @@ weight_decay: 0.001
 max_seq_length: 512
 
 # Maximun sequence length for model output
-max_target_length: 512
+max_target_length: 152
 
 # Number of training epochs
 num_train_epochs: 1
