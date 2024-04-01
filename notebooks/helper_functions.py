@@ -1,36 +1,3 @@
-import os
-import logging
-from os.path import abspath
-from pathlib import Path
-from sacred import Experiment
-from sacred.observers import FileStorageObserver
-from dataclasses import field
-from typing import Optional
-from datasets import load_dataset
-import transformers
-import evaluate
-import torch
-import numpy as np
-import re
-from transformers import (
-    AutoTokenizer,
-    T5ForConditionalGeneration,
-    Seq2SeqTrainingArguments,
-    Seq2SeqTrainer,
-    DataCollatorForSeq2Seq
-)
-from wasabi import msg
-from pathlib import Path
-from os.path import abspath
-
-# Determine home directory
-home_dir = Path(abspath(""))
-
-# Setting up sacred experiment
-ex = Experiment()
-ex.add_config(home_dir.joinpath('config/config_T5-L_cdr.yaml').__str__())
-ex.observers.append(FileStorageObserver('sacred_runs'))
-
 def postprocess_text(preds, labels):
         preds = [pred.strip() for pred in preds]
         labels = [label.strip() for label in labels]
@@ -263,7 +230,6 @@ def re_metric(predictions: list[str], references: list[str], ner_labels: list[st
 
     return {'re_precision':precision, 're_recall':recall, 're_f1':f1, 'unstructured':unstructured_text}
 
-@ex.capture
 def compute_metrics(eval_preds):
     preds, labels = eval_preds
     if isinstance(preds, tuple):
@@ -286,7 +252,6 @@ def compute_metrics(eval_preds):
     result["gen_len"] = np.mean(prediction_lens) # mean length of the generated sequences
     return result
 
-@ex.capture
 def preprocess_function(examples, dataset_vars, max_seq_length, padding, truncation, ignore_pad_token_for_loss):
     '''
     This function takes a dataset of input and target sequences.
@@ -331,164 +296,3 @@ def preprocess_function(examples, dataset_vars, max_seq_length, padding, truncat
     model_inputs["labels"] = labels["input_ids"]
 
     return model_inputs
-        
-
-def custom_load_dataset(dataset_vars):
-
-    # Get the dataset file paths
-    dataset_dir_path = Path(abspath("")).joinpath(dataset_vars['dir'])
-    file_paths = dataset_dir_path.glob(f"*.{type}")
-
-    # sacred observer | Log the dataset
-    for path in file_paths:
-        ex.open_resource(path.__str__())
-
-    # Load dataset
-    dataset = load_dataset(
-        dataset_vars['type'], 
-        data_dir=dataset_dir_path.__str__(),
-        column_names=dataset_vars['column_names']
-        )
-
-    return dataset
-
-@ex.automain
-def main(
-    bf16,
-    dataset_vars,
-    output_dir,
-    fp16,
-    gradient_accumulation_steps,
-    gradient_checkpointing,
-    group_by_length,
-    learning_rate,
-    local_rank,
-    logging_steps,
-    lr_scheduler_type,
-    max_grad_norm,
-    max_seq_length,
-    max_steps,
-    model_name,
-    num_train_epochs,
-    optim,
-    per_device_eval_batch_size,
-    per_device_train_batch_size,
-    pytorch_cuda_alloc_conf_list,
-    save_steps,
-    use_8bit,
-    warmup_ratio,
-    weight_decay,
-    do_eval,
-    evaluation_strategy,
-    eval_steps,
-    ignore_pad_token_for_loss
-):
-
-    # logging
-    transformers.utils.logging.disable_progress_bar()
-
-    
-    
-    # Setting Pytorch cuda allocation config
-    # for i in pytorch_cuda_alloc_conf_list: # WORK NEEDED doesn't this overwrite eachother?
-    #     os.environ["PYTORCH_CUDA_ALLOC_CONF"]=i
-
-    # Setting up 
-    # Note to self: if all of these parameters are defined with the same name in the config i 
-    # could replace this with Seq2SeqTrainingArguments() because of the variable injections of sacred.
-    training_arguments = Seq2SeqTrainingArguments(
-        output_dir=output_dir,
-        per_device_train_batch_size=per_device_train_batch_size,
-        gradient_accumulation_steps=gradient_accumulation_steps,
-        optim=optim,
-        save_steps=save_steps,
-        logging_steps=logging_steps,
-        learning_rate=learning_rate,
-        fp16=fp16,
-        bf16=bf16,
-        max_grad_norm=max_grad_norm,
-        max_steps=max_steps,
-        warmup_ratio=warmup_ratio,
-        group_by_length=group_by_length,
-        lr_scheduler_type=lr_scheduler_type,
-        predict_with_generate=True,
-        save_total_limit=2,
-        save_strategy='steps',
-        load_best_model_at_end=True,
-        do_eval=do_eval,
-        evaluation_strategy=evaluation_strategy,
-        eval_steps=eval_steps,
-        remove_unused_columns=True,
-        generation_max_length=128
-    )
-
-    # Loading dataset
-    with msg.loading(f"Loading dataset from:{dataset_vars['dir']}"):
-        dataset = custom_load_dataset(dataset_vars)
-        dataset_train = dataset['train'].select(range(1,501)) # remove first row that contains column names
-        dataset_eval = dataset['validation'].select(range(1,501)) # remove first row that contains column names
-    msg.good(f"Loaded dataset from:{dataset_vars['dir']}")
-
-    # Load tokenizer
-    with msg.loading(f"Initializing tokenizer"):
-        global tokenizer #Otherwise the tokenizer won'te be acessible from within ohter functions
-        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, legacy=False, model_max_length=max_seq_length)
-    msg.good("Initialized Tokenizer")
-    
-    # Load model
-    with msg.loading(f"Loading model {model_name}"):
-        device_map = {"": 0} # FIND OUT WHAT THIS DOES
-        model = T5ForConditionalGeneration.from_pretrained(
-            model_name,
-            load_in_8bit=use_8bit,
-            device_map=device_map,
-        )
-    msg.good(f"Loaded model {model_name}")
-
-    ### Apply preprocessing
-    with msg.loading(f"Preprocessing dataset..."):
-        # Preprocess training dataset
-        dataset_train = dataset_train.map(
-            preprocess_function,
-            batched=True,
-            desc="Running tokenizer on train dataset"
-        )
-
-        # Preprocess evaluation dataset
-        dataset_eval = dataset_eval.map(
-            preprocess_function,
-            batched=True,
-            desc="Running tokenizer on train dataset"
-        )
-    msg.good(f"Preprocessed dataset!")
-
-    # Load metric
-    global metric # Otherwise the metric object won't be accessible from within compute_metric()
-    metric = evaluate.load("rouge")
-
-    # Create Seq2Seq data collator to overwrite the default datacollator
-    label_pad_token_id = -100 if ignore_pad_token_for_loss else tokenizer.pad_token_id
-    data_collator = DataCollatorForSeq2Seq(
-        tokenizer,
-        model=model,
-        label_pad_token_id=label_pad_token_id,
-        pad_to_multiple_of=8 if fp16 else None,
-    )
-
-    # Initialize Trainer
-    trainer = Seq2SeqTrainer(
-        model=model,
-        train_dataset=dataset_train,
-        eval_dataset=dataset_eval,
-        tokenizer=tokenizer,
-        data_collator=data_collator,
-        compute_metrics=compute_metrics,
-        args=training_arguments
-    )
-
-    # Train
-    transformers.utils.logging.enable_progress_bar()
-    trainer.train()
-    trainer.save_model(output_dir="results/final_model")
-
-
