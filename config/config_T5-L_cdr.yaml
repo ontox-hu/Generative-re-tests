@@ -19,7 +19,7 @@ dataset_vars:
         - "relations"
 
 # The directory where the fine-tuned model is saved
-output_dir: "./fine_tune_results"
+output_dir: "./results"
 
 # Local rank for distributed training, -1 for non-distributed
 local_rank: -1
