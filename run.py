@@ -53,7 +53,7 @@ def handle_coreforents(ent, keep):
     else:
         return (coreferents[0], ent[1])
 
-def extract_relation_triples(text: str, re_labels: list[str], keep_coreforents: bool = False) -> list[dict]:
+def extract_relation_triples(text: str, ner_labels: list[str], re_labels: list[str], keep_coreforents: bool = False) -> list[dict]:
     '''
     This function extracts the relationship triples out of structerd text. 
     This function assumes that the NER labels are in this structure: @label@
@@ -65,6 +65,24 @@ def extract_relation_triples(text: str, re_labels: list[str], keep_coreforents: 
     returns:
     A list of dictionaries
     '''
+    ##### Check if text is structered #####
+    split_on_space_text = text.split(" ")
+    
+    # check if text ends with a relation label
+    if split_on_space_text[-1] not in re_labels:
+        raise ValueError(f"Text is unstructured: '{text}'\nText should end with a relationship label found in re_labels: {re_labels}.\n")
+        
+    # Check if text has atleast two entity labels and one relation label
+    count_ner_labels = sum([split_on_space_text.count(label) for label in ner_labels])
+    count_re_labels = sum([split_on_space_text.count(label) for label in re_labels])
+    if count_ner_labels < 2 or count_re_labels < 1:
+        raise ValueError(f"Text is unstructured: '{text}'\nText should have atleast 2 ner_labels: {ner_labels} and 1 re_label: {re_labels} to make a relationship.\n")
+        
+    # Check if text has the right amount of entity and relation labels
+    if count_re_labels*2 != count_ner_labels:
+        raise ValueError(f"Text is unstructured: '{text}'\nText should have 2 times the ner_labels: {ner_labels} then there are re_label: {re_labels}. currently: ner labels: {count_ner_labels} | re labels: {count_re_labels}\n")
+    
+    ##### Extracting relation triples #####
     # Split the input text into relation segments
     relation_segments = split_on_labels(text, re_labels)
     
@@ -75,14 +93,7 @@ def extract_relation_triples(text: str, re_labels: list[str], keep_coreforents: 
     # Map relation label to entity text
     entity_texts = relation_segments[::2] # All uneven elements
     relation_labels = relation_segments[1::2] # All even elements
-    if len(entity_texts) != len(relation_labels): # raise ValueError('Amount of relation labels in the text does not equal to amount of entities pairs')
-        print(f'Warning: Amount of relation labels {relation_labels}\ndoes not equal to amount of entities pairs {entity_texts}')
-        print('Reducing...')
-        print(text)
-        reduced_len = min(len(entity_texts), len(relation_labels))
-        entity_texts = entity_texts[:reduced_len]
-        relation_labels = relation_labels[:reduced_len]
-    
+        
     # Initialize a list to hold the relation triples
     relations = []
     
@@ -107,11 +118,20 @@ def get_group(relation_triples):
         group.append(rel['tail_ent'])
     return group
 
-def split_coferents(ent):
-    if isinstance(ent['text'], tuple):
-        return tuple([{"label":ent["label"], "text":ent['text'][i]} for i in range(len(ent['text']))])
-    else:
-        return ent
+def map_coferents(group):
+    '''
+    This function splits a coferent mention of an entity into the two different mentions
+    '''
+    result = {}
+    group = [split_coferents(ent) for ent in group] # Split coferents into two entities
+    for ent in group:
+        if isinstance(ent, tuple):
+            for i in range(len(ent)):
+                result[frozenset(ent[i].items())] = ent
+        else:
+            result[frozenset(ent.items())] = (ent,)
+
+    return result
 
 def map_coferents(group):
     result = {}
@@ -125,7 +145,7 @@ def map_coferents(group):
 
     return result
 
-def ner_metric(predictions: list[str], references: list[str], re_labels: list[str], coferent_matching: str ="relaxed") -> dict:
+def ner_metric(predictions: list[str], references: list[str], ner_labels: list[str], re_labels: list[str], coferent_matching: str ="relaxed") -> dict:
     '''
     Calculates the precision, recall and f1-score for document named entity recognition. 
     input:
@@ -145,10 +165,17 @@ def ner_metric(predictions: list[str], references: list[str], re_labels: list[st
     tp = 0 # True positive count
     fp = 0 # False positive count
     fn = 0 # False negative count
+
+    unstructured_text_count = 0
+    
     for pred_text, ref_text in zip(predictions, references):
         # Define groups
-        pred_group = get_group(extract_relation_triples(pred_text, ['@CID@'], True))
-        ref_group = get_group(extract_relation_triples(ref_text, ['@CID@'], True))
+        try:
+            pred_group = get_group(extract_relation_triples(pred_text, ner_labels, re_labels, True))
+        except ValueError:
+            continue
+            
+        ref_group = get_group(extract_relation_triples(ref_text, ner_labels, re_labels, True))
     
         if coferent_matching == "relaxed":
             # Create mapping from a coferent mentions to all coferent mentions
@@ -194,19 +221,25 @@ def ner_metric(predictions: list[str], references: list[str], re_labels: list[st
     
     return {'ner_precision':precision, 'ner_recall':recall, 'ner_f1':f1}
 
-def re_metric(predictions: list[str], references: list[str]):
+def re_metric(predictions: list[str], references: list[str], ner_labels: list[str], re_labels: list[str]):
     
     tp = 0 # True positive count
     fp = 0 # False positive count
     fn = 0 # False negative count
     
+    unstructured_text_count = 0
+    
     # Define groups
     for pred_text, ref_text in zip(predictions, references):
+        try:
+            predicted_triples = extract_relation_triples(pred_text, ner_labels, re_labels, True)
+        except ValueError: # Text is unstructured
+            unstructured_text_count += 1
+            continue
     
-        predictions = extract_relation_triples(pred_text, ['@CID@'], True)
-        references = extract_relation_triples(ref_text, ['@CID@'], True)
+        references = extract_relation_triples(ref_text, ner_labels, re_labels, True)
     
-        for pred in predictions:
+        for pred in predicted_triples:
             if pred in references: # True positive
                 tp=+1
                 references.remove(pred)
@@ -226,7 +259,9 @@ def re_metric(predictions: list[str], references: list[str]):
     if (precision+recall) == 0: f1=0.0
     else: f1 = 2 * ((precision*recall)/(precision+recall))
 
-    return {'re_precision':precision, 're_recall':recall, 're_f1':f1}
+    unstructured_text = unstructured_text_count/len(predictions)
+
+    return {'re_precision':precision, 're_recall':recall, 're_f1':f1, 'unstructured':unstructured_text}
 
 @ex.capture
 def compute_metrics(eval_preds):
@@ -244,8 +279,8 @@ def compute_metrics(eval_preds):
     decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
 
     result = metric.compute(predictions=decoded_preds, rouge_types=['rouge1', 'rouge2'], references=decoded_labels, use_stemmer=False)
-    result.update(re_metric(predictions=decoded_preds, references=decoded_labels))
-    result.update(ner_metric(predictions=decoded_preds, references=decoded_labels, re_labels=['@CID@']))
+    result.update(re_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=['@CHEMICAL@', '@DISEASE@'], re_labels=['@CID@']))
+    result.update(ner_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=['@CHEMICAL@', '@DISEASE@'], re_labels=['@CID@']))
     result = {k: round(v * 100, 4) for k, v in result.items()} # rounds all metric values to 4 numvers behind the comma and make them percentages
     prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in preds]
     result["gen_len"] = np.mean(prediction_lens) # mean length of the generated sequences
