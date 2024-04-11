@@ -22,6 +22,7 @@ dataset_vars:
 # Which data splits to use for training
 splits_for_training:
     - "train"
+    - "test"
 
 # Which data splits to use for validation
 splits_for_validation:

@@ -25,11 +25,16 @@ from os.path import abspath
 
 # Determine home directory
 home_dir = Path(abspath(""))
+config_dir = home_dir.joinpath("config")
 
 # Setting up sacred experiment
-ex = Experiment()
-ex.add_config(home_dir.joinpath('config/config_testing.yaml').__str__())
+ex = Experiment("generative_re")
 ex.observers.append(FileStorageObserver('sacred_runs'))
+for config_file_path in config_dir.glob("config*.yaml"): # add all configs to experiment
+    ex.add_config(config_file_path.__str__())
+
+############### Intended use ###############
+# python run.py with config/config_name.yaml
 
 def postprocess_text(preds, labels):
         preds = [pred.strip() for pred in preds]
@@ -546,6 +551,6 @@ def main(
     # Train
     transformers.utils.logging.enable_progress_bar()
     trainer.train()
-    trainer.save_model(output_dir=output_dir+best_model_name)
+    trainer.save_model(output_dir=output_dir+'/'+best_model_name)
 
 
