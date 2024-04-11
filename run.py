@@ -428,7 +428,6 @@ def main(
     ignore_pad_token_for_loss,
     generation_max_length,
     remove_unused_columns,
-    evaluation_strategy,
     load_best_model_at_end,
     save_strategy,
     save_total_limit,
