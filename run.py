@@ -28,7 +28,7 @@ home_dir = Path(abspath(""))
 
 # Setting up sacred experiment
 ex = Experiment()
-ex.add_config(home_dir.joinpath('config/config_T5-3b_cdr.yaml').__str__())
+ex.add_config(home_dir.joinpath('config/config_testing.yaml').__str__())
 ex.observers.append(FileStorageObserver('sacred_runs'))
 
 def postprocess_text(preds, labels):
@@ -308,7 +308,7 @@ def re_metric(predictions: list[str], references: list[str], ner_labels: list[st
     return {'re_precision':precision, 're_recall':recall, 're_f1':f1, 'unstructured':unstructured_text}
 
 @ex.capture
-def compute_metrics(eval_preds):
+def compute_metrics(eval_preds, ner_labels, re_labels, coferent_matching):
     preds, labels = eval_preds
     if isinstance(preds, tuple):
         preds = preds[0]
@@ -514,7 +514,7 @@ def main(
         dataset_eval = dataset_eval.map(
             preprocess_function,
             batched=True,
-            desc="Running tokenizer on train dataset"
+            desc="Running tokenizer on evaluation dataset"
         )
     msg.good(f"Preprocessed dataset!")
 
