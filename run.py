@@ -6,7 +6,7 @@ from sacred import Experiment
 from sacred.observers import FileStorageObserver
 from dataclasses import field
 from typing import Optional
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 import transformers
 import evaluate
 import torch
@@ -28,7 +28,7 @@ home_dir = Path(abspath(""))
 
 # Setting up sacred experiment
 ex = Experiment()
-ex.add_config(home_dir.joinpath('config/config_T5-L_cdr.yaml').__str__())
+ex.add_config(home_dir.joinpath('config/config_T5-3b_cdr.yaml').__str__())
 ex.observers.append(FileStorageObserver('sacred_runs'))
 
 def postprocess_text(preds, labels):
@@ -435,7 +435,10 @@ def main(
     re_labels,
     ner_labels,
     coferent_matching,
-    keep_coreforents
+    keep_coreforents,
+    splits_for_training,
+    splits_for_validation,
+    logging_dir
 ):
 
     # logging
@@ -471,14 +474,15 @@ def main(
         evaluation_strategy=evaluation_strategy,
         eval_steps=eval_steps,
         remove_unused_columns=remove_unused_columns,
-        generation_max_length=generation_max_length
+        generation_max_length=generation_max_length,
+        logging_dir=logging_dir
     )
 
     # Loading dataset
     with msg.loading(f"Loading dataset from:{dataset_vars['dir']}"):
         dataset = custom_load_dataset(dataset_vars)
-        dataset_train = dataset['train'].select(range(1,501)) # remove first row that contains column names
-        dataset_eval = dataset['validation'].select(range(1,501)) # remove first row that contains column names
+        dataset_train = concatenate_datasets([dataset[split].select(range(1,501)) for split in splits_for_training])
+        dataset_eval = concatenate_datasets([dataset[split].select(range(1,501)) for split in splits_for_validation])
     msg.good(f"Loaded dataset from:{dataset_vars['dir']}")
 
     # Load tokenizer

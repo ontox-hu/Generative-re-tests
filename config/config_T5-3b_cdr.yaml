@@ -1,13 +1,14 @@
-###########################
-# First version of config #
-###########################
+#### Config ####
 
 ########## Notes ##########
 # This config is meant to run on a single A10
 
-#### Config ####
+############################ model ############################
+
 # The name of the Hugging Face model to be used for fine-tuning
-model_name: "google-t5/t5-large"
+model_name: "google-t5/t5-3b"
+
+########################### dataset ###########################
 
 # The name of the dataset directory
 dataset_vars:
@@ -18,38 +19,83 @@ dataset_vars:
         - "input"
         - "relations"
 
-# The directory where the fine-tuned model is saved
-output_dir: "./fine_tune_results"
+# Which data splits to use for training
+splits_for_training:
+    - "train"
+    - "validation"
+
+# Which data splits to use for validation
+splits_for_validation:
+    - "test"
+
+# A list of all the NER labels
+ner_labels:
+    - "@CHEMICAL@"
+    - "@DISEASE@"
+
+# A list of all the RE labels
+re_labels:
+    - "@CID@"
+
+# Whether or not to automatically remove the columns unused by the model forward method.
+remove_unused_columns: True
+
+###############################################################
+#                      training parameters                    #
+###############################################################
 
 # Local rank for distributed training, -1 for non-distributed
 local_rank: -1
 
 # Batch size per device during training
-per_device_train_batch_size: 2
+per_device_train_batch_size: 6
 
 # Batch size per device for evaluation
-per_device_eval_batch_size: 2
+per_device_eval_batch_size: 6
 
 # Number of steps for gradient accumulation to optimize GPU memory usage
 gradient_accumulation_steps: 4
 
-# Learning rate for the optimizer
-learning_rate: 0.0002
-
 # Maximum gradient norm for gradient clipping, helps in stabilizing training
 max_grad_norm: 0.3
+
+# Enables gradient checkpointing to save memory at the cost of slower backward pass
+gradient_checkpointing: True
 
 # Weight decay coefficient for regularization
 weight_decay: 0.001
 
-# Maximum sequence length for model inputs
-max_seq_length: 512
-
-# Maximun sequence length for model output
-max_target_length: 512
-
 # Number of training epochs
-num_train_epochs: 1
+num_train_epochs: 7
+
+# Maximum number of training steps
+max_steps: 1000
+
+# Frequency of logging training updates
+logging_steps: 10
+
+# Where the tensorboard logging files goes
+logging_dir: "./logs"
+
+# Frequency of saving the model
+save_steps: 100
+
+# When to save. can be either "no": No save is done during training, "epoch": Save is done at the end of each epoch., "steps": Save is done every save_steps.
+save_strategy: "steps"
+
+# How many models are kept in storage during training, minimum of two for comparison during evaluation.
+save_total_limit: 2
+
+# The directory where the fine-tuned model is saved
+output_dir: "./results"
+
+# Wheter to load the best model at the end (and save it)
+load_best_model_at_end: True
+
+# Best model save location
+best_model_name: "final_model"
+
+################### Padding and truncation ###################
 
 # Wheter to apply padding to can be either: True or 'longest'/ max_length / False or 'do_not_pad'
 padding: True
@@ -60,29 +106,24 @@ ignore_pad_token_for_loss: True
 # Shortens the input / target sequence to fit the max_seq_length or max_target_length
 truncation: True
 
-# Wheter to predict with the generate function. should be true for Seq2Seq models
-predict_with_generate: True
+# Groups sequences by length to minimize padding, improving efficiency
+group_by_length: True
 
-# Enables gradient checkpointing to save memory at the cost of slower backward pass
-gradient_checkpointing: True
+########################### optimizer #########################
 
 # Optimizer to use, optimized for 32-bit precision
 optim: "paged_adamw_32bit"
 
+# Learning rate for the optimizer
+learning_rate: 0.0002
+
 # Type of learning rate scheduler
 lr_scheduler_type: "constant"
-
-# Maximum number of training steps
-max_steps: 10000
 
 # Warmup ratio for learning rate scheduling
 warmup_ratio: 0.03
 
-# Groups sequences by length to minimize padding, improving efficiency
-group_by_length: True
-
-# Frequency of saving the model
-save_steps: 10
+########################### Evaluation ########################
 
 # Whether to run evaluation on the validation set or not. Will be set to True if evaluation_strategy is different from "no"
 do_eval: True
@@ -91,7 +132,30 @@ do_eval: True
 evaluation_strategy: 'steps'
 
 # (int or float, optional) — Number of update steps between two evaluations if evaluation_strategy="steps".
-eval_steps: 10
+eval_steps: 100
+
+# Wheter to use the coferent mentions to match named entities. can be either "relaxed", "strict" or "no".
+coferent_matching: "strict"
+
+# Wheter to keep coferent mentions when extracting relation triples from the output text.
+keep_coreforents: False
+
+######################### generation #########################
+
+# Wheter to predict with the generate function. should be true for Seq2Seq models
+predict_with_generate: True
+
+# Maximum sequence length for model inputs
+max_seq_length: 512
+
+# Maximun sequence length for model output
+max_target_length: 512
+
+# The max_length to use on each evaluation loop when predict_with_generate=True. Will default to the max_length value of the model configuration
+generation_max_length: 256
+
+# Generate config
+generation_config: "config/generate_configs/"
 
 ###############################################
 #               Memory settings               #
@@ -109,5 +173,4 @@ use_8bit: False
 fp16: False
 bf16: False
 
-# Frequency of logging training updates
-logging_steps: 10
+
