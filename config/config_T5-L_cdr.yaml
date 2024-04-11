@@ -3,8 +3,12 @@
 ########## Notes ##########
 # This config is meant to run on a single A10
 
+############################ model ############################
+
 # The name of the Hugging Face model to be used for fine-tuning
 model_name: "google-t5/t5-large"
+
+########################### dataset ###########################
 
 # The name of the dataset directory
 dataset_vars:
@@ -15,8 +19,17 @@ dataset_vars:
         - "input"
         - "relations"
 
-# The directory where the fine-tuned model is saved
-output_dir: "./results"
+# A list of all the NER labels
+ner_labels:
+    - "@CHEMICAL@"
+    - "@DISEASE@"
+
+# A list of all the RE labels
+re_labels:
+    - "@CID@"
+
+# Whether or not to automatically remove the columns unused by the model forward method.
+remove_unused_columns: True
 
 ###############################################################
 #                      training parameters                    #
@@ -49,11 +62,26 @@ num_train_epochs: 1
 # Maximum number of training steps
 max_steps: 10000
 
+# Frequency of logging training updates
+logging_steps: 10
+
 # Frequency of saving the model
 save_steps: 100
 
-# Frequency of logging training updates
-logging_steps: 10
+# When to save. can be either "no": No save is done during training, "epoch": Save is done at the end of each epoch., "steps": Save is done every save_steps.
+save_strategy: "steps"
+
+# How many models are kept in storage during training, minimum of two for comparison during evaluation.
+save_total_limit: 2
+
+# The directory where the fine-tuned model is saved
+output_dir: "./results"
+
+# Wheter to load the best model at the end (and save it)
+load_best_model_at_end: True
+
+# Best model save location
+best_model_name: "final_model"
 
 ################### Padding and truncation ###################
 
@@ -69,7 +97,7 @@ truncation: True
 # Groups sequences by length to minimize padding, improving efficiency
 group_by_length: True
 
-### optimizer ###
+########################### optimizer #########################
 
 # Optimizer to use, optimized for 32-bit precision
 optim: "paged_adamw_32bit"
@@ -83,7 +111,7 @@ lr_scheduler_type: "constant"
 # Warmup ratio for learning rate scheduling
 warmup_ratio: 0.03
 
-### Evaluation ###
+########################### Evaluation ########################
 
 # Whether to run evaluation on the validation set or not. Will be set to True if evaluation_strategy is different from "no"
 do_eval: True
@@ -94,6 +122,12 @@ evaluation_strategy: 'steps'
 # (int or float, optional) — Number of update steps between two evaluations if evaluation_strategy="steps".
 eval_steps: 100
 
+# Wheter to use the coferent mentions to match named entities. can be either "relaxed", "strict" or "no".
+coferent_matching: "strict"
+
+# Wheter to keep coferent mentions when extracting relation triples from the output text.
+keep_coreforents: False
+
 ######################### generation #########################
 
 # Wheter to predict with the generate function. should be true for Seq2Seq models
@@ -103,7 +137,10 @@ predict_with_generate: True
 max_seq_length: 512
 
 # Maximun sequence length for model output
-max_target_length: 152
+max_target_length: 512
+
+# The max_length to use on each evaluation loop when predict_with_generate=True. Will default to the max_length value of the model configuration
+generation_max_length: 256
 
 # Generate config
 generation_config: "config/generate_configs/"

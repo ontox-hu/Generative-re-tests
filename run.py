@@ -59,6 +59,7 @@ def handle_coreforents(ent, keep):
     else:
         return (coreferents[0], ent[1])
 
+@ex.capture
 def extract_relation_triples(text: str, ner_labels: list[str], re_labels: list[str], keep_coreforents: bool = False) -> list[dict]:
     '''
     This function extracts the relationship triples out of structerd text. 
@@ -124,9 +125,18 @@ def get_group(relation_triples):
         group.append(rel['tail_ent'])
     return group
 
+def split_coferents(ent):
+    '''
+    This function splits a entitiy with a coferent mention into two entities for each entity form.
+    '''
+    if isinstance(ent['text'], tuple): # Check if the entity has coferent mentions
+        return tuple([{"label":ent["label"], "text":ent['text'][i]} for i in range(len(ent['text']))])
+    else:
+        return (ent,)
+
 def map_coferents(group):
     '''
-    This function splits a coferent mention of an entity into the two different mentions
+    This function maps all forms of a coferent mentions to all it's other forms for all coferent mentions in a group of relationships.
     '''
     result = {}
     group = [split_coferents(ent) for ent in group] # Split coferents into two entities
@@ -139,12 +149,7 @@ def map_coferents(group):
 
     return result
 
-def split_coferents(ent):
-    if isinstance(ent['text'], tuple):
-        return tuple([{"label":ent["label"], "text":ent['text'][i]} for i in range(len(ent['text']))])
-    else:
-        return ent
-
+@ex.capture
 def ner_metric(predictions: list[str], references: list[str], ner_labels: list[str], re_labels: list[str], coferent_matching: str ="relaxed") -> dict:
     '''
     Calculates the precision, recall and f1-score for document named entity recognition. 
@@ -154,60 +159,91 @@ def ner_metric(predictions: list[str], references: list[str], ner_labels: list[s
         references: 
             List of decoded gold data
         coferent_matching: 
-            Wheter to use the coferent mentions to match named entities. can be either "relaxed" or "strict".
-            relaxed meaning that all coferent mentions might be used to match a predicted named entity to a reference entity
-            strict meaning the model needs to have all coferent mentions correct to count as a match. (including the sequence)
+            Wheter to use the coferent mentions to match named entities. can be either "relaxed", "strict" or "no".
+            "relaxed" Meaning that all coferent mentions might be used to match a predicted named entity to a reference entity
+            "strict"  Meaning the model needs to have all coferent mentions correct to count as a match. (including the sequence)
+            "no"      Meaning that coferent mentions are ignored, and only the first mentions are used.
         re_labels
             Which relation extraxtion labels are used.
     output
         a dictionary with the key value pairs of metric_name : metric value
     '''
+    if coferent_matching not in ["relaxed", "strict", "no"]: 
+        raise ValueError(f"'{coferent_matching}' is not a valid value for coferent_matching, Please choose one of {["relaxed", "strict", "no"]}.")
+
+    if coferent_matching == "no":
+        keep_coferents = False
+    else:
+        keep_coferents = True
+    
     tp = 0 # True positive count
     fp = 0 # False positive count
     fn = 0 # False negative count
-
     unstructured_text_count = 0
     
     for pred_text, ref_text in zip(predictions, references):
         # Define groups
         try:
-            pred_group = get_group(extract_relation_triples(pred_text, ner_labels, re_labels, True))
+            pred_group = get_group(extract_relation_triples(pred_text, ner_labels, re_labels, keep_coferents))
         except ValueError:
-            continue
-            
-        ref_group = get_group(extract_relation_triples(ref_text, ner_labels, re_labels, True))
-    
+            # Should be a logging statement here
+            continue # Skip this row entirely
+        
+        ref_group = get_group(extract_relation_triples(ref_text, ner_labels, re_labels, keep_coferents))
+
         if coferent_matching == "relaxed":
             # Create mapping from a coferent mentions to all coferent mentions
             mapping_coferent = map_coferents(ref_group)
-    
-            pred_group = [split_coferents(ent) for ent in pred_group] # Split coferents into multiple entities 
-            # print(f"pred_group before flattening: {pred_group}") # DEBUG
-            pred_group = [item for sublist in pred_group for item in (sublist if isinstance(sublist, tuple) else [sublist])] # Flatten list
-            # print(f"pred_group after flattening: {pred_group}"+'\n') # DEBUG
-    
+            
+            # Split entities in the reference group
             ref_group = [split_coferents(ent) for ent in ref_group] # Split coferents into multiple entities 
             ref_group = [item for sublist in ref_group for item in (sublist if isinstance(sublist, tuple) else [sublist])] # Flatten list
-    
-        # print(f"pred_group: {pred_group}\nref_group: {ref_group}") #DEBUG
-        # print(f"mapping: {mapping_coferent}")
+        
+            # print(f"pred_group: {pred_group}\n\nref_group: {ref_group}\n") #DEBUG
+            # print(f"mapping: {mapping_coferent}\n\n\n") # DEBUG
+        
         checked_coferent_pred = []
         for ent in pred_group:
-            # print(ent) # DEBUG
-            # print(ref_group) # DEBUG
-            # print() #DEBUG
-            if ent in ref_group: # True positive
-                tp += 1
-                # Remove all instances of the coferent mentions
-                if coferent_matching == "relaxed": 
-                    [ref_group.remove(i) for i in mapping_coferent[frozenset(ent.items())]]
-                    checked_coferent_pred.extend([i for i in mapping_coferent[frozenset(ent.items())]])
-                else: ref_group.remove(ent) 
-                continue
-            elif ent not in ref_group and ent not in checked_coferent_pred: # False positive
-                fp += 1
-        fn += len(ref_group) # False negative 
-        # print(f"TP: {tp}, FP: {fp}, FN: {fn}") #DEBUG
+            # print(f"entity: {ent}") # DEBUG
+            # print(f"ref_group: {ref_group} ") # DEBUG
+
+            if coferent_matching == "relaxed":
+                # Split coferent entity
+                ent_forms = split_coferents(ent)
+            else:
+                ent_forms = [ent]
+
+            # print(f"\nStarting entity checking, ent_forms: {ent_forms}\n") # DEBUG
+            for ent_form in ent_forms:
+                # print(f"Checking if {ent_form} in {ref_group}") # DEBUG
+                if ent_form in ref_group: # True positive
+                    tp=tp+1
+                    # print(f"True! \n") # DEBUG
+                    
+                    # Remove all instances of the coferent mentions
+                    if coferent_matching == "relaxed": 
+                        [ref_group.remove(i) for i in mapping_coferent[frozenset(ent_form.items())]] # Remove all coferent mentions from the reference group
+                        # print(f"Removing coferent mentions from reference group: {[i for i in mapping_coferent[frozenset(ent_form.items())]]}\n") #DEBUG
+                        checked_coferent_pred.extend([i for i in mapping_coferent[frozenset(ent_form.items())]]) # Remember which coferent mentions have been checked
+                    else: 
+                        ref_group.remove(ent) 
+                    break # A match was found so we move on to the next entity
+                    
+                elif ent_form not in ref_group and ent_form not in checked_coferent_pred: # False positive
+                    fp=fp+1
+                    # print(f"False! \n") #DEBUG
+                    break # A mismatch was found so we move on to the next entity
+
+        # print(f"Counting false negatives. Current ref group: length:{len(ref_group)} | {ref_group}\n") # DEBUG
+        # [ref_group.remove(i) for i in checked_coferent_pred if i in ref_group]
+        # print(f"ref group after removeal of checked coferents: length:{len(ref_group)} | {ref_group}\n") # DEBUG
+
+        # if coferent_matching == "relaxed": # WORK NEEDED. RELAXED MATCHING BASED ON COFERENT MENTIONS DOES NOT WORK YET!!!
+            # print(f"checked_coferent_pred: {checked_coferent_pred}") #DEBUG
+            # Remove all checked entities before counting false negatives
+            
+        fn=fn+len(ref_group) # False negative 
+        # print(f"TP: {tp}, FP: {fp}, FN: {fn} \n\n\n") #DEBUG
     
     # Calculate metrics
     if (tp+fp) == 0: precision=0.0
@@ -221,6 +257,7 @@ def ner_metric(predictions: list[str], references: list[str], ner_labels: list[s
     
     return {'ner_precision':precision, 'ner_recall':recall, 'ner_f1':f1}
 
+@ex.capture
 def re_metric(predictions: list[str], references: list[str], ner_labels: list[str], re_labels: list[str]):
     
     tp = 0 # True positive count
@@ -240,14 +277,21 @@ def re_metric(predictions: list[str], references: list[str], ner_labels: list[st
         references = extract_relation_triples(ref_text, ner_labels, re_labels, True)
     
         for pred in predicted_triples:
+            # print(f"Trying: {pred} in {references} ") # DEBUG
             if pred in references: # True positive
-                tp=+1
+                # print(f"True!") # DEBUG
+                tp=tp+1
                 references.remove(pred)
+                # print(f"Updated references: {references} \n") # DEBUG
             else: # False positive
-                fp+=1
+                # print(f"False! \n") #DEBUG
+                fp=fp+1
                 
         # False negative
+        # print(f"Counting false negatives: {len(references)} from: {references} \n") #DEBUG
         fn+=len(references)
+
+        # print(f"Current counts: tp:{tp} | fp:{fp} | fn:{fn} \n\n") # DEBUG
 
     # Calculate metrics
     if (tp+fp) == 0: precision=0.0
@@ -279,8 +323,8 @@ def compute_metrics(eval_preds):
     decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
 
     result = metric.compute(predictions=decoded_preds, rouge_types=['rouge1', 'rouge2'], references=decoded_labels, use_stemmer=False)
-    result.update(re_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=['@CHEMICAL@', '@DISEASE@'], re_labels=['@CID@']))
-    result.update(ner_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=['@CHEMICAL@', '@DISEASE@'], re_labels=['@CID@']))
+    result.update(re_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=ner_labels, re_labels=re_labels))
+    result.update(ner_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=ner_labels, re_labels=re_labels, coferent_matching=coferent_matching))
     result = {k: round(v * 100, 4) for k, v in result.items()} # rounds all metric values to 4 numvers behind the comma and make them percentages
     prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in preds]
     result["gen_len"] = np.mean(prediction_lens) # mean length of the generated sequences
@@ -381,14 +425,23 @@ def main(
     do_eval,
     evaluation_strategy,
     eval_steps,
-    ignore_pad_token_for_loss
+    ignore_pad_token_for_loss,
+    generation_max_length,
+    remove_unused_columns,
+    evaluation_strategy,
+    load_best_model_at_end,
+    save_strategy,
+    save_total_limit,
+    predict_with_generate,
+    re_labels,
+    ner_labels,
+    coferent_matching,
+    keep_coreforents
 ):
 
     # logging
     transformers.utils.logging.disable_progress_bar()
 
-    
-    
     # Setting Pytorch cuda allocation config
     # for i in pytorch_cuda_alloc_conf_list: # WORK NEEDED doesn't this overwrite eachother?
     #     os.environ["PYTORCH_CUDA_ALLOC_CONF"]=i
@@ -411,15 +464,15 @@ def main(
         warmup_ratio=warmup_ratio,
         group_by_length=group_by_length,
         lr_scheduler_type=lr_scheduler_type,
-        predict_with_generate=True,
-        save_total_limit=2,
-        save_strategy='steps',
-        load_best_model_at_end=True,
+        predict_with_generate=predict_with_generate,
+        save_total_limit=save_total_limit,
+        save_strategy=save_strategy,
+        load_best_model_at_end=load_best_model_at_end,
         do_eval=do_eval,
         evaluation_strategy=evaluation_strategy,
         eval_steps=eval_steps,
-        remove_unused_columns=True,
-        generation_max_length=128
+        remove_unused_columns=remove_unused_columns,
+        generation_max_length=generation_max_length
     )
 
     # Loading dataset
@@ -489,6 +542,6 @@ def main(
     # Train
     transformers.utils.logging.enable_progress_bar()
     trainer.train()
-    trainer.save_model(output_dir="results/final_model")
+    trainer.save_model(output_dir=output_dir+best_model_name)
 
 
