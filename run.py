@@ -438,7 +438,8 @@ def main(
     keep_coreforents,
     splits_for_training,
     splits_for_validation,
-    logging_dir
+    logging_dir,
+    best_model_name
 ):
 
     # logging
