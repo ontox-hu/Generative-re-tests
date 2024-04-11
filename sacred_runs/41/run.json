@@ -1,0 +1,94 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.17.1",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.2.1",
+      "transformers==4.38.1",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "run",
+    "repositories": [
+      {
+        "commit": "4f3a107c225d4330b4ba2f6e1154df7951e27e83",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_52a2c0053fdb4640258742e24d68ea90.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 548, in main\n    trainer.save_model(output_dir=output_dir+best_model_name)\n                                             ^^^^^^^^^^^^^^^\n",
+    "NameError: name 'best_model_name' is not defined\n"
+  ],
+  "heartbeat": "2024-04-11T16:23:56.884806",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD EPYC 7V13 64-Core Processor",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        }
+      ]
+    },
+    "hostname": "jupyternoteboo",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1059-azure-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.12.1"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-04-11T16:18:26.813033",
+  "status": "FAILED",
+  "stop_time": "2024-04-11T16:23:56.885463"
+}
