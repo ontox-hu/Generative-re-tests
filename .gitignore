@@ -9,7 +9,6 @@ _sources/.ipynb_checkpoints
 notebooks/*.ipynb_checkpoints
 data/cdr_seq2rel/*.ipynb_checkpoints
 data/test_eval/cdr_seq2rel/.ipynb_checkpoints
-/results/*
 
 # PyCache
 *.pyc

@@ -1,0 +1,7 @@
+Date: ?
+sacred_run: 38
+model: google-t5/t5-3b
+score: 
+    re_f1: ±28%
+    ner_f1: ±50%
+
