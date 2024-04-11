@@ -22,11 +22,11 @@ dataset_vars:
 # Which data splits to use for training
 splits_for_training:
     - "train"
-    - "validation"
+    - "test"
 
 # Which data splits to use for validation
 splits_for_validation:
-    - "test"
+    - "validation"
 
 # A list of all the NER labels
 ner_labels:
