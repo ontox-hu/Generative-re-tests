@@ -1,0 +1,110 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.17.1",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.2.1",
+      "transformers==4.38.1",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "generative_re",
+    "repositories": [
+      {
+        "commit": "4a219e2dff1b1c6767a9b1918f85190e42d8a7ab",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_81a8f79c490e698b5d21a8987251dbbd.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/torch/serialization.py\", line 629, in save\n    _save(obj, opened_zipfile, pickle_module, pickle_protocol, _disable_byteorder_record)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/torch/serialization.py\", line 863, in _save\n    zip_file.write_record(name, storage.data_ptr(), num_bytes)\n",
+    "RuntimeError: [enforce fail at inline_container.cc:764] . PytorchStreamWriter failed writing file data/666: file write failed\n",
+    "\nDuring handling of the above exception, another exception occurred:\n\n",
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 553, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 1624, in train\n    return inner_training_loop(\n           ^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 2029, in _inner_training_loop\n    self._maybe_log_save_evaluate(tr_loss, grad_norm, model, trial, epoch, ignore_keys_for_eval)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 2423, in _maybe_log_save_evaluate\n    self._save_checkpoint(model, trial, metrics=metrics)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 2503, in _save_checkpoint\n    self._save_optimizer_and_scheduler(staging_output_dir)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 2628, in _save_optimizer_and_scheduler\n    torch.save(self.optimizer.state_dict(), os.path.join(output_dir, OPTIMIZER_NAME))\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/torch/serialization.py\", line 628, in save\n    with _open_zipfile_writer(f) as opened_zipfile:\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/torch/serialization.py\", line 476, in __exit__\n    self.file_like.write_end_of_file()\n",
+    "RuntimeError: [enforce fail at inline_container.cc:595] . unexpected pos 18651293696 vs 18651293592\n"
+  ],
+  "heartbeat": "2024-04-11T22:31:44.177431",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD EPYC 7V13 64-Core Processor",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        }
+      ]
+    },
+    "hostname": "jupyternoteboo",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1059-azure-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.12.1"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [
+      "config/config_T5-3b_cdr.yaml"
+    ],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "config/config_T5-3b_cdr.yaml"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-04-11T21:38:37.676295",
+  "status": "FAILED",
+  "stop_time": "2024-04-11T22:32:02.252906"
+}
