@@ -36,17 +36,18 @@ create_directory() {
     fi
 }
 
-# Function to copy checkpoints
-copy_checkpoints() {
-    checkpoint_dir="data/generative_re_model_storage_azure/$sacred_run_number/checkpoints"
-    mkdir -p "$checkpoint_dir"
+# Function to clear cache, excluding ~/.cache/huggingface/metrics
+clear_cache() {
+    cache_dir="$HOME/.cache"
 
-    for checkpoint_dir_path in Generative-re-tests/results/checkpoint-*; do
-        if [ -d "$checkpoint_dir_path" ]; then
-            cp -r "$checkpoint_dir_path" "$checkpoint_dir"
-            echo "Copied: $checkpoint_dir_path to $checkpoint_dir"
-        fi
-    done
+    # Check if the cache directory exists
+    if [ -d "$cache_dir" ]; then
+        # Remove all files and directories inside the cache directory except ~/.cache/huggingface/metrics
+        find "$cache_dir/huggingface" -mindepth 1 -maxdepth 1 -type d ! -name "metrics" -exec rm -rf {} \;
+        echo "Cache cleared except for ~/.cache/huggingface/metrics"
+    else
+        echo "Cache directory not found: $cache_dir"
+    fi
 }
 
 # Function to copy latest sacred run
@@ -66,6 +67,7 @@ main() {
 
     # Check if directory exists, if not create it
     create_directory "data/generative_re_model_storage_azure/$sacred_run_number"
+    create_directory "data/generative_re_model_storage_azure/$sacred_run_number/checkpoints"
 
     # Run loop for specified run_time
     while [ $(($(date +%s) - start_time)) -lt "$run_time" ]; do
