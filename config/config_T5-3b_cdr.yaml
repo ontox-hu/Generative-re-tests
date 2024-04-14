@@ -69,7 +69,7 @@ weight_decay: 0.001
 num_train_epochs: 7
 
 # Maximum number of training steps
-max_steps: 1000
+max_steps: 500
 
 # Frequency of logging training updates
 logging_steps: 10
@@ -78,7 +78,7 @@ logging_steps: 10
 logging_dir: "./logs"
 
 # Frequency of saving the model
-save_steps: 100
+save_steps: 25
 
 # When to save. can be either "no": No save is done during training, "epoch": Save is done at the end of each epoch., "steps": Save is done every save_steps.
 save_strategy: "steps"
@@ -135,7 +135,7 @@ do_eval: False
 evaluation_strategy: 'steps'
 
 # (int or float, optional) — Number of update steps between two evaluations if evaluation_strategy="steps".
-eval_steps: 100
+eval_steps: 25
 
 # Wheter to use the coferent mentions to match named entities. can be either "relaxed", "strict" or "no".
 coferent_matching: "strict"
