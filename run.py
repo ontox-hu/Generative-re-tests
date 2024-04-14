@@ -444,7 +444,8 @@ def main(
     splits_for_training,
     splits_for_validation,
     logging_dir,
-    best_model_name
+    best_model_name,
+    save_only_model
 ):
 
     # logging
@@ -481,7 +482,8 @@ def main(
         eval_steps=eval_steps,
         remove_unused_columns=remove_unused_columns,
         generation_max_length=generation_max_length,
-        logging_dir=logging_dir
+        logging_dir=logging_dir,
+        save_only_model=save_only_model
     )
 
     # Loading dataset
