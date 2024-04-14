@@ -2,39 +2,20 @@
 
 # Check if the number of arguments is correct
 if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 run_time sacred_run_number"
+    echo "Usage: $0 run_time_hours sacred_run_number"
     exit 1
 fi
 
 # Assign arguments to variables
-run_time="$1"
+run_time_hours="$1"
 sacred_run_number="$2"
 start_time=$(date +%s)
 
-# Function to clear cache
-clear_cache() {
-    cache_dir="$HOME/.cache"
+# Convert hours to seconds
+run_time=$((run_time_hours * 3600))
 
-    # Check if the cache directory exists
-    if [ -d "$cache_dir" ]; then
-        # Remove all files and directories inside the cache directory
-        rm -rf "$cache_dir"/*
-        echo "Cache cleared: $cache_dir"
-    else
-        echo "Cache directory not found: $cache_dir"
-    fi
-}
-
-# Function to create directory if it doesn't exist
-create_directory() {
-    directory="$1"
-    
-    # Check if directory exists, if not create it
-    if [ ! -d "$directory" ]; then
-        mkdir -p "$directory"
-        echo "Created directory: $directory"
-    fi
-}
+# Print starting message
+echo "Starting script with sacred_run_number $sacred_run_number. It will run for $run_time_hours hours."
 
 # Function to clear cache, excluding ~/.cache/huggingface/metrics
 clear_cache() {
@@ -48,6 +29,31 @@ clear_cache() {
     else
         echo "Cache directory not found: $cache_dir"
     fi
+}
+
+
+# Function to create directory if it doesn't exist
+create_directory() {
+    directory="$1"
+    
+    # Check if directory exists, if not create it
+    if [ ! -d "$directory" ]; then
+        mkdir -p "$directory"
+        echo "Created directory: $directory"
+    fi
+}
+
+# Function to copy checkpoints
+copy_checkpoints() {
+    checkpoint_dir="data/generative_re_model_storage_azure/$sacred_run_number/checkpoints"
+    create_directory "$checkpoint_dir"
+
+    for checkpoint_dir_path in Generative-re-tests/results/checkpoint-*; do
+        if [ -d "$checkpoint_dir_path" ]; then
+            cp -r "$checkpoint_dir_path" "$checkpoint_dir"
+            echo "Copied: $checkpoint_dir_path to $checkpoint_dir"
+        fi
+    done
 }
 
 # Function to copy latest sacred run
