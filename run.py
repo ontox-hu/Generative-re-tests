@@ -489,8 +489,8 @@ def main(
     # Loading dataset
     with msg.loading(f"Loading dataset from:{dataset_vars['dir']}"):
         dataset = custom_load_dataset(dataset_vars)
-        dataset_train = concatenate_datasets([dataset[split].select(range(1,501)) for split in splits_for_training])
-        dataset_eval = concatenate_datasets([dataset[split].select(range(1,501)) for split in splits_for_validation])
+        dataset_train = concatenate_datasets([dataset[split].select(range(1,501)) for split in splits_for_training]) # remove first row that contains column names
+        dataset_eval = concatenate_datasets([dataset[split].select(range(1,501)) for split in splits_for_validation]) # remove first row that contains column names
     msg.good(f"Loaded dataset from:{dataset_vars['dir']}")
 
     # Load tokenizer
