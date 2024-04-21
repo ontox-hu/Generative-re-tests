@@ -93,7 +93,7 @@ save_only_model: True
 output_dir: "./results"
 
 # Wheter to load the best model at the end (and save it)
-load_best_model_at_end: True
+load_best_model_at_end: False
 
 # Best model save location
 best_model_name: "final_model"
