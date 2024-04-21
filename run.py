@@ -262,40 +262,83 @@ def ner_metric(predictions: list[str], references: list[str], ner_labels: list[s
     
     return {'ner_precision':precision, 'ner_recall':recall, 'ner_f1':f1}
 
+def match_re_relaxed(predicted_triple, references):
+
+    pred_head_mentions = predicted_triple["head_ent"]["text"]
+    pred_tail_mentions = predicted_triple["tail_ent"]["text"]
+
+    for head_mention in pred_head_mentions:
+        for reference_triple in references:
+            if head_mention in reference_triple["head_ent"]["text"] and reference_triple["head_ent"]["label"]==predicted_triple["head_ent"]["label"]: # Head entity match
+                for tail_mention in pred_tail_mentions:
+                    if tail_mention in reference_triple["tail_ent"]["text"] and reference_triple["tail_ent"]["label"]==predicted_triple["tail_ent"]["label"]: # Tail entity match
+                        return (True, reference_triple)
+    return (False, None)
+
+def match_re_strict(predicted_triple, references):
+
+    pred_head_mentions = predicted_triple["head_ent"]["text"]
+    pred_tail_mentions = predicted_triple["tail_ent"]["text"]
+
+    for reference_triple in references:
+        if set(pred_head_mentions) == set(reference_triple["head_ent"]["text"]) and reference_triple["head_ent"]["label"]==predicted_triple["head_ent"]["label"]: # Head entity match
+            for tail_mention in pred_tail_mentions:
+                    if set(pred_tail_mentions) == set(reference_triple["tail_ent"]["text"]) and reference_triple["tail_ent"]["label"]==predicted_triple["tail_ent"]["label"]: # Tail entity match
+                        return (True, reference_triple)
+    return (False, None)
+
 @ex.capture
-def re_metric(predictions: list[str], references: list[str], ner_labels: list[str], re_labels: list[str]):
+def re_metric(predictions: list[str], references: list[str], ner_labels: list[str], re_labels: list[str], coferent_matching: str ="relaxed"):
     
     tp = 0 # True positive count
     fp = 0 # False positive count
     fn = 0 # False negative count
     
     unstructured_text_count = 0
+
+    if coferent_matching == "no":
+        keep_coreforents = False
+    else:
+        keep_coreforents = True
     
-    # Define groups
+    # Transform structed text into relationship triples
     for pred_text, ref_text in zip(predictions, references):
         try:
-            predicted_triples = extract_relation_triples(pred_text, ner_labels, re_labels, True)
+            predicted_triples = extract_relation_triples(pred_text, ner_labels, re_labels, keep_coreforents=keep_coreforents)
         except ValueError: # Text is unstructured
             unstructured_text_count += 1
             continue
     
-        references = extract_relation_triples(ref_text, ner_labels, re_labels, True)
-    
-        for pred in predicted_triples:
-            # print(f"Trying: {pred} in {references} ") # DEBUG
-            if pred in references: # True positive
-                # print(f"True!") # DEBUG
-                tp=tp+1
-                references.remove(pred)
-                # print(f"Updated references: {references} \n") # DEBUG
-            else: # False positive
-                # print(f"False! \n") #DEBUG
-                fp=fp+1
+        references = extract_relation_triples(ref_text, ner_labels, re_labels, keep_coreforents=keep_coreforents)
+
+        # Determine matches between predicted and reference triples
+        for predicted_triple in predicted_triples:
+            # print(f"Checking if {predicted_triple}\nin") # DEBUG
+            # print(f"references{references}\n") # DEBUG
+            if coferent_matching == "relaxed":
+                is_match, matched_ref_triple = match_re_relaxed(predicted_triple, references)
+                if is_match: 
+                    tp = tp + 1
+                    # print(f"True!") # DEBUG
+                    references.remove(matched_ref_triple)
+                else:
+                    fp = fp + 1
+                    # print(f"False!") # DEBUG
+                    
+            elif coferent_matching == "strict" or "no":
+                is_match, matched_ref_triple = match_re_strict(predicted_triple, references)
+                if is_match: 
+                    tp = tp + 1
+                    # print(f"True!") # DEBUG
+                    references.remove(matched_ref_triple)
+                else:
+                    fp = fp + 1
+                    # print(f"False!") # DEBUG
+        
                 
         # False negative
         # print(f"Counting false negatives: {len(references)} from: {references} \n") #DEBUG
         fn+=len(references)
-
         # print(f"Current counts: tp:{tp} | fp:{fp} | fn:{fn} \n\n") # DEBUG
 
     # Calculate metrics
