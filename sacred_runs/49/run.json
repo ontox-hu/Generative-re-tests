@@ -1,0 +1,102 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.17.1",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.2.1",
+      "transformers==4.38.1",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "generative_re",
+    "repositories": [
+      {
+        "commit": "e1114414f01fa59d7f9836c0539cacb0144feea0",
+        "dirty": false,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_dbaf5d7df2a770ac7dc76ae8c708f732.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 599, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 1624, in train\n    return inner_training_loop(\n           ^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 1722, in _inner_training_loop\n    self.optimizer, self.lr_scheduler = deepspeed_init(self, num_training_steps=max_steps)\n                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/integrations/deepspeed.py\", line 389, in deepspeed_init\n    hf_deepspeed_config.trainer_config_finalize(args, model, num_training_steps)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/integrations/deepspeed.py\", line 261, in trainer_config_finalize\n    raise ValueError(\n",
+    "ValueError: Please correct the following DeepSpeed config values that mismatch TrainingArguments values:\n- ds train_micro_batch_size_per_gpu=1 vs hf per_device_train_batch_size=4\n- ds gradient_accumulation_steps=1 vs hf gradient_accumulation_steps=4\n- ds gradient_clipping=1 vs hf max_grad_norm=0.3\nThe easiest method is to set these DeepSpeed config values to 'auto'.\n"
+  ],
+  "heartbeat": "2024-04-21T18:04:41.611024",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD EPYC 7V13 64-Core Processor",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        }
+      ]
+    },
+    "hostname": "jupyternoteboo.src-azurefreebu.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1059-azure-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.12.1"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [
+      "config/config_T5-11b_cdr.yaml"
+    ],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "config/config_T5-11b_cdr.yaml"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-04-21T18:04:01.947180",
+  "status": "FAILED",
+  "stop_time": "2024-04-21T18:04:41.611834"
+}
