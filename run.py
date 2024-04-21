@@ -544,7 +544,7 @@ def main(
     # Set torch data type to load the model in
     if torch_dtype == "float32":
         torch_dtype == torch.float32
-    elif torch_dtype == "float32":
+    elif torch_dtype == "float16":
         torch_dtype == torch.float16
     
     # Load model
