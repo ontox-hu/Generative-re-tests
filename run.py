@@ -597,6 +597,7 @@ def main(
     # Train
     transformers.utils.logging.enable_progress_bar()
     trainer.train()
-    trainer.save_model(output_dir=output_dir+'/'+best_model_name)
+    if load_best_model_at_end:
+        trainer.save_model(output_dir=output_dir+'/'+best_model_name)
 
 
