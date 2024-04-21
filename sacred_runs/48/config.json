@@ -1,0 +1,108 @@
+{
+  "best_model_name": "final_model",
+  "bf16": false,
+  "bnb_4bit": {
+    "compute_dtype": "float16",
+    "quant_type": "nf4"
+  },
+  "bnb_8bit": {
+    "compute_dtype": "float16",
+    "quant_type": "nf4"
+  },
+  "coferent_matching": "strict",
+  "dataset_vars": {
+    "column_names": [
+      "input",
+      "relations"
+    ],
+    "dir": "data/cdr_seq2rel",
+    "split": "train",
+    "type": "csv"
+  },
+  "deepspeed": {
+    "fp16": {
+      "enabled": true
+    },
+    "gradient_accumulation_steps": 1,
+    "gradient_clipping": 1,
+    "offload_optimizer": {
+      "device": "cpu"
+    },
+    "train_micro_batch_size_per_gpu": 1,
+    "zero_optimization": {
+      "stage": 1
+    }
+  },
+  "do_eval": false,
+  "eval_steps": 25,
+  "evaluation_strategy": "steps",
+  "fp16": true,
+  "generation_config": "config/generate_configs/",
+  "generation_max_length": 256,
+  "gradient_accumulation_steps": 4,
+  "gradient_checkpointing": true,
+  "group_by_length": true,
+  "ignore_pad_token_for_loss": true,
+  "keep_coreforents": false,
+  "learning_rate": 0.0002,
+  "load_best_model_at_end": true,
+  "local_rank": -1,
+  "logging_dir": "./logs",
+  "logging_steps": 10,
+  "lora": {
+    "alpha": 128,
+    "dropout": 0.1,
+    "r": 64,
+    "targets": [
+      "query_key_value",
+      "dense",
+      "dense_h_to_4h",
+      "dense_4h_to_h"
+    ]
+  },
+  "lr_scheduler_type": "constant",
+  "max_grad_norm": 0.3,
+  "max_seq_length": 512,
+  "max_steps": 500,
+  "max_target_length": 512,
+  "metric_for_best_model": "re_f1",
+  "model_name": "google-t5/t5-11b",
+  "ner_labels": [
+    "@CHEMICAL@",
+    "@DISEASE@"
+  ],
+  "num_train_epochs": 5,
+  "optim": "paged_adamw_32bit",
+  "output_dir": "./results",
+  "packing": false,
+  "padding": true,
+  "per_device_eval_batch_size": 4,
+  "per_device_train_batch_size": 4,
+  "predict_with_generate": true,
+  "pytorch_cuda_alloc_conf_list": [
+    "heuristic",
+    "max_split_size_mb512"
+  ],
+  "re_labels": [
+    "@CID@"
+  ],
+  "remove_unused_columns": true,
+  "save_only_model": true,
+  "save_steps": 25,
+  "save_strategy": "steps",
+  "save_total_limit": 2,
+  "seed": 967830014,
+  "splits_for_training": [
+    "train",
+    "test"
+  ],
+  "splits_for_validation": [
+    "validation"
+  ],
+  "truncation": true,
+  "use_4bit": false,
+  "use_8bit": false,
+  "use_nested_quant": false,
+  "warmup_ratio": 0.03,
+  "weight_decay": 0.001
+}
