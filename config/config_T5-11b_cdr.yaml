@@ -8,6 +8,12 @@
 # The name of the Hugging Face model to be used for fine-tuning
 model_name: "google-t5/t5-11b"
 
+# What datatype to use when loading the model valid options are: "float16", "float32" or "auto"
+torch_dtype: "float16"
+
+# Enables the use of 8-bit quantization to reduce memory usage
+use_8bit: False
+
 ########################### dataset ###########################
 
 # The name of the dataset directory
@@ -181,14 +187,6 @@ generation_config: "config/generate_configs/"
 ###############################################
 #               Memory settings               #
 ###############################################
-
-# Configuration for PyTorch CUDA memory allocation to optimize GPU memory
-pytorch_cuda_alloc_conf_list:
-  - "heuristic"
-  - "max_split_size_mb512"
-
-# Enables the use of 8-bit quantization to reduce memory usage
-use_8bit: False
 
 # Flags for using mixed precision training
 fp16: True

@@ -489,15 +489,12 @@ def main(
     logging_dir,
     best_model_name,
     save_only_model,
-    deepspeed
+    deepspeed,
+    torch_dtype
 ):
 
     # logging
     transformers.utils.logging.disable_progress_bar()
-
-    # Setting Pytorch cuda allocation config
-    # for i in pytorch_cuda_alloc_conf_list: # WORK NEEDED doesn't this overwrite eachother?
-    #     os.environ["PYTORCH_CUDA_ALLOC_CONF"]=i
 
     # Setting up 
     # Note to self: if all of these parameters are defined with the same name in the config i 
@@ -544,12 +541,19 @@ def main(
         tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, legacy=False, model_max_length=max_seq_length)
     msg.good("Initialized Tokenizer")
     
+    # Set torch data type to load the model in
+    if torch_dtype == "float32":
+        torch_dtype == torch.float32
+    elif torch_dtype == "float32":
+        torch_dtype == torch.float16
+    
     # Load model
     with msg.loading(f"Loading model {model_name}"):
         model = T5ForConditionalGeneration.from_pretrained(
             model_name,
+            torch_dtype=torch_dtype,
             load_in_8bit=use_8bit,
-            device_map="auto",
+            device_map="auto"
         )
     msg.good(f"Loaded model {model_name}")
 
