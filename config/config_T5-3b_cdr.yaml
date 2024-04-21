@@ -98,6 +98,23 @@ load_best_model_at_end: True
 # Best model save location
 best_model_name: "final_model"
 
+# The metric to use to determine which model is the best
+metric_for_best_model: "re_f1"
+
+################## Training on multiple GPUs ##################
+
+# The configuration foor deepspeed, set to 
+deepspeed: 
+    zero_optimization:
+        stage: 1
+    offload_optimizer:
+        device: "cpu"
+    gradient_accumulation_steps: 1
+    train_micro_batch_size_per_gpu: 1
+    gradient_clipping: 1
+    fp16:
+        enabled: true
+
 ################### Padding and truncation ###################
 
 # Wheter to apply padding to can be either: True or 'longest'/ max_length / False or 'do_not_pad'
@@ -173,7 +190,7 @@ pytorch_cuda_alloc_conf_list:
 use_8bit: False
 
 # Flags for using mixed precision training
-fp16: False
+fp16: True
 bf16: False
 
 

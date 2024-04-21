@@ -488,7 +488,8 @@ def main(
     splits_for_validation,
     logging_dir,
     best_model_name,
-    save_only_model
+    save_only_model,
+    deepspeed
 ):
 
     # logging
@@ -526,7 +527,8 @@ def main(
         remove_unused_columns=remove_unused_columns,
         generation_max_length=generation_max_length,
         logging_dir=logging_dir,
-        save_only_model=save_only_model
+        save_only_model=save_only_model,
+        deepspeed=deepspeed
     )
 
     # Loading dataset
@@ -544,11 +546,10 @@ def main(
     
     # Load model
     with msg.loading(f"Loading model {model_name}"):
-        device_map = {"": 0} # FIND OUT WHAT THIS DOES
         model = T5ForConditionalGeneration.from_pretrained(
             model_name,
             load_in_8bit=use_8bit,
-            device_map=device_map,
+            device_map="auto",
         )
     msg.good(f"Loaded model {model_name}")
 
