@@ -356,7 +356,7 @@ def re_metric(predictions: list[str], references: list[str], ner_labels: list[st
     return {'re_precision':precision, 're_recall':recall, 're_f1':f1, 'unstructured':unstructured_text}
 
 @ex.capture
-def compute_metrics(eval_preds, ner_labels, re_labels, coferent_matching):
+def compute_metrics(eval_preds, ner_labels, re_labels, coferent_matching_re, coferent_matching_ner):
     preds, labels = eval_preds
     if isinstance(preds, tuple):
         preds = preds[0]
@@ -371,8 +371,8 @@ def compute_metrics(eval_preds, ner_labels, re_labels, coferent_matching):
     decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
 
     result = metric.compute(predictions=decoded_preds, rouge_types=['rouge1', 'rouge2'], references=decoded_labels, use_stemmer=False)
-    result.update(re_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=ner_labels, re_labels=re_labels))
-    result.update(ner_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=ner_labels, re_labels=re_labels, coferent_matching=coferent_matching))
+    result.update(re_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=ner_labels, re_labels=re_labels, coferent_matching=coferent_matching_re))
+    result.update(ner_metric(predictions=decoded_preds, references=decoded_labels, ner_labels=ner_labels, re_labels=re_labels, coferent_matching=coferent_matching_ner))
     result = {k: round(v * 100, 4) for k, v in result.items()} # rounds all metric values to 4 numvers behind the comma and make them percentages
     prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in preds]
     result["gen_len"] = np.mean(prediction_lens) # mean length of the generated sequences
@@ -482,7 +482,8 @@ def main(
     predict_with_generate,
     re_labels,
     ner_labels,
-    coferent_matching,
+    coferent_matching_re,
+    coferent_matching_ner,
     keep_coreforents,
     splits_for_training,
     splits_for_validation,
