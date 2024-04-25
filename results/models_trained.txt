@@ -2,6 +2,12 @@ Date: ?
 sacred_run: 38
 model: google-t5/t5-3b
 score: 
-    re_f1: ±28%
-    ner_f1: ±50%
+    re_f1: faulty
+    ner_f1: faulty
 
+date:25-04-2024
+sacred_run: 59
+model: google-t5/t5-base
+score: 
+    re_f1: 59.6325
+    ner_f1: faulty
