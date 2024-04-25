@@ -553,8 +553,7 @@ def main(
         model = T5ForConditionalGeneration.from_pretrained(
             model_name,
             torch_dtype=torch_dtype,
-            load_in_8bit=use_8bit,
-            device_map="auto"
+            load_in_8bit=use_8bit
         )
     msg.good(f"Loaded model {model_name}")
 
