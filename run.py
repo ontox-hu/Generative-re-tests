@@ -497,6 +497,8 @@ def main(
     # logging
     transformers.utils.logging.disable_progress_bar()
 
+    output_dir = home_dir.parent().joinpath(output_dir).__str__()
+
     # Setting up 
     # Note to self: if all of these parameters are defined with the same name in the config i 
     # could replace this with Seq2SeqTrainingArguments() because of the variable injections of sacred.
@@ -512,6 +514,7 @@ def main(
         bf16=bf16,
         max_grad_norm=max_grad_norm,
         max_steps=max_steps,
+        num_train_epochs,
         warmup_ratio=warmup_ratio,
         group_by_length=group_by_length,
         lr_scheduler_type=lr_scheduler_type,
@@ -555,6 +558,7 @@ def main(
             torch_dtype=torch_dtype,
             load_in_8bit=use_8bit
         )
+        model.to('cuda')
     msg.good(f"Loaded model {model_name}")
 
     ### Apply preprocessing
