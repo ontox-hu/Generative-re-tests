@@ -1,0 +1,123 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.19.0",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.3.0",
+      "transformers==4.39.3",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "generative_re",
+    "repositories": [
+      {
+        "commit": "9e51a2bc8466783cbc0f3942eb9876831b0d0f4f",
+        "dirty": false,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_d787e8d94ee808e4b19bd59295d12449.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 1127, in get_optimizer_cls_and_kwargs\n    from bitsandbytes.optim import AdamW, Lion, RMSprop\n",
+    "ModuleNotFoundError: No module named 'bitsandbytes'\n",
+    "\nDuring handling of the above exception, another exception occurred:\n\n",
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 603, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 1780, in train\n    return inner_training_loop(\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 1878, in _inner_training_loop\n    self.optimizer, self.lr_scheduler = deepspeed_init(self, num_training_steps=max_steps)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/integrations/deepspeed.py\", line 407, in deepspeed_init\n    optimizer, lr_scheduler = deepspeed_optim_sched(\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/integrations/deepspeed.py\", line 332, in deepspeed_optim_sched\n    optimizer = trainer.create_optimizer()\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 1016, in create_optimizer\n    optimizer_cls, optimizer_kwargs = Trainer.get_optimizer_cls_and_kwargs(self.args, opt_model)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 1155, in get_optimizer_cls_and_kwargs\n    raise ValueError(\"Trainer tried to instantiate bnb optimizer but bnb is not installed!\")\n",
+    "ValueError: Trainer tried to instantiate bnb optimizer but bnb is not installed!\n"
+  ],
+  "heartbeat": "2024-04-25T13:52:00.288921",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD EPYC 7V13 64-Core Processor",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        }
+      ]
+    },
+    "hostname": "genllmre.src-azurefreebu.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1061-azure-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.10.14"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [
+      "config/config_T5-b_cdr.yaml"
+    ],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "config/config_T5-b_cdr.yaml"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-04-25T13:51:50.676225",
+  "status": "FAILED",
+  "stop_time": "2024-04-25T13:52:00.289638"
+}

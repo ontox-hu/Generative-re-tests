@@ -1,0 +1,120 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.17.1",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.2.1",
+      "transformers==4.38.1",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "generative_re",
+    "repositories": [
+      {
+        "commit": "0dae7ef9b34bb6f995e557395df5b86069adb9bb",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_f00a5264b8103650b196bc0d9be9a9a0.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 603, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 1624, in train\n    return inner_training_loop(\n           ^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/transformers/trainer.py\", line 1776, in _inner_training_loop\n    model, self.optimizer = self.accelerator.prepare(self.model, self.optimizer)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/accelerate/accelerator.py\", line 1220, in prepare\n    result = self._prepare_deepspeed(*args)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/accelerate/accelerator.py\", line 1605, in _prepare_deepspeed\n    engine, optimizer, _, lr_scheduler = deepspeed.initialize(**kwargs)\n                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/deepspeed/__init__.py\", line 143, in initialize\n    dist.init_distributed(dist_backend=dist_backend,\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/deepspeed/comm/comm.py\", line 658, in init_distributed\n    mpi_discovery(distributed_port=distributed_port, verbose=verbose)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/venv/lib/python3.12/site-packages/deepspeed/comm/comm.py\", line 677, in mpi_discovery\n    from mpi4py import MPI\n",
+    "ModuleNotFoundError: No module named 'mpi4py'\n"
+  ],
+  "heartbeat": "2024-04-25T11:21:13.704423",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD EPYC 7V13 64-Core Processor",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        }
+      ]
+    },
+    "hostname": "genllmre.src-azurefreebu.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1061-azure-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.12.2"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [
+      "config/config_T5-b_cdr.yaml"
+    ],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "config/config_T5-b_cdr.yaml"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-04-25T11:20:11.282267",
+  "status": "FAILED",
+  "stop_time": "2024-04-25T11:21:13.705437"
+}
