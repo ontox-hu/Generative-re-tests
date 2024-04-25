@@ -174,7 +174,7 @@ def ner_metric(predictions: list[str], references: list[str], ner_labels: list[s
         a dictionary with the key value pairs of metric_name : metric value
     '''
     if coferent_matching not in ["relaxed", "strict", "no"]: 
-        raise ValueError(f"'{coferent_matching}' is not a valid value for coferent_matching, Please choose one of {["relaxed", "strict", "no"]}.")
+        raise ValueError(f"'{coferent_matching}' is not a valid value for coferent_matching, Please choose one of ['relaxed', 'strict', 'no'].")
 
     if coferent_matching == "no":
         keep_coferents = False
