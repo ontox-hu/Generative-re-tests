@@ -96,7 +96,7 @@ save_total_limit: 2
 save_only_model: True
 
 # The directory where the fine-tuned model is saved
-output_dir: "./results"
+output_dir: "data/generative_re_model_storage_azure/latest_run"
 
 # Wheter to load the best model at the end (and save it)
 load_best_model_at_end: False
