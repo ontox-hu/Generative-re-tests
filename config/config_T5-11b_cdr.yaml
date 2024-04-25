@@ -9,7 +9,7 @@
 model_name: "google-t5/t5-11b"
 
 # What datatype to use when loading the model valid options are: "float16", "float32" or "auto"
-torch_dtype: "auto"
+torch_dtype: "float32"
 
 # Enables the use of 8-bit quantization to reduce memory usage
 use_8bit: False
@@ -96,7 +96,7 @@ save_total_limit: 2
 save_only_model: True
 
 # The directory where the fine-tuned model is saved
-output_dir: "data/generative_re_model_storage_azure/latest_run"
+output_dir: "/home/lgrootde/data/generative_re_model_storage_azure/latest_run"
 
 # Wheter to load the best model at the end (and save it)
 load_best_model_at_end: False
@@ -113,7 +113,13 @@ metric_for_best_model: "re_f1"
 # When setting parameters to auto it means that the value is taken from the huggingface config (so this config)
 deepspeed: 
     zero_optimization:
-        stage: 2
+        stage: 3
+        offload_param:
+            device: "cpu"
+            pin_memory: false
+    offload_optimizer:
+        device": "cpu"
+        pin_memory: false
     gradient_accumulation_steps: "auto"
     train_micro_batch_size_per_gpu: "auto"
     gradient_clipping: "auto"

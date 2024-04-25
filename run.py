@@ -497,7 +497,7 @@ def main(
     # logging
     transformers.utils.logging.disable_progress_bar()
 
-    output_dir = home_dir.parent().joinpath(output_dir).__str__()
+    # new_output_dir = home_dir.parent().joinpath(output_dir).__str__()
 
     # Setting up 
     # Note to self: if all of these parameters are defined with the same name in the config i 
@@ -514,7 +514,7 @@ def main(
         bf16=bf16,
         max_grad_norm=max_grad_norm,
         max_steps=max_steps,
-        num_train_epochs,
+        num_train_epochs=num_train_epochs,
         warmup_ratio=warmup_ratio,
         group_by_length=group_by_length,
         lr_scheduler_type=lr_scheduler_type,
