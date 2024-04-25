@@ -1,0 +1,120 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.19.0",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.3.0",
+      "transformers==4.39.3",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "generative_re",
+    "repositories": [
+      {
+        "commit": "02f707facf9855062d3599a66838ef9453fadf60",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_d787e8d94ee808e4b19bd59295d12449.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 603, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 1780, in train\n    return inner_training_loop(\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 2118, in _inner_training_loop\n    tr_loss_step = self.training_step(model, inputs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 3036, in training_step\n    loss = self.compute_loss(model, inputs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 3059, in compute_loss\n    outputs = model(**inputs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1532, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1541, in _call_impl\n    return forward_call(*args, **kwargs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/data_parallel.py\", line 171, in forward\n    raise RuntimeError(\"module must have its parameters and buffers \"\n",
+    "RuntimeError: module must have its parameters and buffers on device cuda:0 (device_ids[0]) but found one of them on device: cpu\n"
+  ],
+  "heartbeat": "2024-04-25T13:56:23.840151",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD EPYC 7V13 64-Core Processor",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        }
+      ]
+    },
+    "hostname": "genllmre.src-azurefreebu.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1061-azure-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.10.14"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [
+      "config/config_T5-b_cdr.yaml"
+    ],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "config/config_T5-b_cdr.yaml"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-04-25T13:56:12.850432",
+  "status": "FAILED",
+  "stop_time": "2024-04-25T13:56:23.841042"
+}
