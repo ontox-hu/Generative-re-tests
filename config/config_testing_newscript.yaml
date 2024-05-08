@@ -1,0 +1,239 @@
+#### Config ####
+
+########## Notes ##########
+# This config is meant to run on a single A10
+
+############################ ModelArguments ############################
+
+# The name of the Hugging Face model to be used for fine-tuning
+model_name_or_path: "google-t5/t5-base"
+
+# Pretrained config name or path if not the same as model_name
+# Will default to model_name_or_path if None.
+config_name:
+
+# Pretrained tokenizer name or path if not the same as model_name
+# Will default to model_name_or_path if None.
+tokenizer_name: 
+
+# Where to store the pretrained models downloaded from huggingface.co
+cache_dir: 
+
+# Whether to use one of the fast tokenizer (backed by the tokenizers library) or not.
+use_fast_tokenizer: True
+
+# The specific model version to use (can be a branch name, tag name or commit id).
+model_revision: "main"
+
+# The token to use as HTTP bearer authorization for remote files. If not specified, will use the token 
+# generated when running `huggingface-cli login` (stored in `~/.huggingface`).
+token:
+
+# Whether or not to allow for custom models defined on the Hub in their own modeling files. 
+# This option should only be set to `True` for repositories you trust and in which you have read the code, 
+# as it will execute code present on the Hub on your local machine.
+trust_remote_code: True
+
+
+# What datatype to use when loading the model valid options are: "float16", "float32" or "auto"
+# torch_dtype: "auto"
+
+# Enables the use of 8-bit quantization to reduce memory usage
+# use_8bit: False
+
+########################### DataTraining ###########################
+
+# The name of the dataset to use (via the datasets library).
+datasel_name:
+
+# The configuration name of the dataset to use (via the datasets library).
+dataset_config_name:
+
+# The input training data file either json, jsonlines or csv
+train_file: "data/cdr_seq2rel/train.csv"
+
+# An optional input evaluation data file to evaluate with the metrics:
+# rouge and the precision, recall and f1-score for relation extration and named entity recognition
+validation_file: "data/cdr_seq2rel/validation.csv"
+
+# An optional input test data file to evaluate with the metrics:
+# rouge and the precision, recall and f1-score for relation extration and named entity recognition
+test_file: "data/cdr_seq2rel/test.csv"
+
+# Name of the column in the dataset to use as the input
+input_column: "input"
+
+# Name of the column in the dataset to use as the output
+output_column: "relations"
+
+# Overwrite the cached training and evaluation sets
+overwrite_cache: False
+
+# The number of processes to use for the preprocessing.
+preprocessing_num_workers: 
+
+# The maximum total input sequence length after tokenization. Sequences longer 
+# than this will be truncated, sequences shorter will be padded.
+max_source_length: 1024
+
+# The maximum total sequence length for target text after tokenization. Sequences longer 
+# than this will be truncated, sequences shorter will be padded.
+max_target_length: 128
+
+# The maximum total sequence length for validation target text after tokenization. Sequences longer 
+# than this will be truncated, sequences shorter will be padded. Will default to `max_target_length`. 
+# This argument is also used to override the ``max_length`` param of ``model.generate``, which is used
+# during ``evaluate`` and ``predict``.
+val_max_target_length: 
+
+# Whether to pad all samples to model maximum sentence length. 
+# If False, will pad the samples dynamically when batching to the maximum length in the batch. More 
+# efficient on GPU but very bad for TPU.
+pad_to_max_length: False
+
+# Wheter to use truncation during the preprocessing of the input and output data.
+truncation: True
+
+# A list of all the NER labels
+ner_labels:
+    - "@CHEMICAL@"
+    - "@DISEASE@"
+
+# A list of all the RE labels
+re_labels:
+    - "@CID@"
+
+# Wheter to use the coferent mentions to match named entities. can be either "relaxed", "strict" or "no".
+coferent_matching_re: "relaxed"
+
+# Wheter to use the coferent mentions to match named entities. can be either "relaxed", "strict" or "no".
+coferent_matching_ner: "strict"
+
+
+###############################################################
+#                      training parameters                    #
+###############################################################
+
+# Local rank for distributed training, -1 for non-distributed
+local_rank: 1
+
+# Batch size per device during training
+per_device_train_batch_size: 4
+
+# Batch size per device for evaluation
+per_device_eval_batch_size: 4
+
+# Number of steps for gradient accumulation to optimize GPU memory usage
+gradient_accumulation_steps: 4
+
+# Maximum gradient norm for gradient clipping, helps in stabilizing training
+max_grad_norm: 0.3
+
+# Enables gradient checkpointing to save memory at the cost of slower backward pass
+gradient_checkpointing: True
+
+# Weight decay coefficient for regularization
+weight_decay: 0.001
+
+# Number of training epochs
+num_train_epochs: 5
+
+# Maximum number of training steps
+max_steps: 500
+
+# Frequency of logging training updates
+logging_steps: 10
+
+# Where the logging files go
+logging_dir: "./logs"
+
+# Frequency of saving the model
+save_steps: 25
+
+# When to save. can be either "no": No save is done during training, "epoch": Save is done at the end of each epoch., "steps": Save is done every save_steps.
+save_strategy: "steps"
+
+# How many models are kept in storage during training, minimum of two for comparison during evaluation.
+save_total_limit: 2
+
+# When checkpointing, whether to only save the model, or also the optimizer, scheduler & rng state. Note that when this is true, you won’t be able to resume training from checkpoint.
+save_only_model: True
+
+# The directory where the fine-tuned model is saved
+output_dir: "/home/lgrootde/data/generative_re_model_storage_azure/latest_run"
+
+# Wheter to load the best model at the end (and save it)
+load_best_model_at_end: False
+
+# Best model save location
+best_model_name: "final_model"
+
+# The metric to use to determine which model is the best
+metric_for_best_model: "re_f1"
+
+# Whether or not to automatically remove the columns unused by the model forward method.
+remove_unused_columns: True
+
+################## Training on multiple GPUs ##################
+
+# The configuration for deepspeed.
+# When setting parameters to auto it means that the value is taken from the huggingface config (so this config)
+deepspeed: 
+    zero_optimization:
+        stage: 2
+    gradient_accumulation_steps: "auto"
+    train_micro_batch_size_per_gpu: "auto"
+    gradient_clipping: "auto"
+    fp16:
+        enabled: true
+
+################### Padding and truncation ###################
+
+# Wheter to replace the pad tokens with -100 so that they are ignored when calculating the loss
+ignore_pad_token_for_loss: True
+
+# Groups sequences by length to minimize padding, improving efficiency
+group_by_length: True
+
+########################### optimizer #########################
+
+# Optimizer to use, optimized for 32-bit precision
+optim: "paged_adamw_32bit"
+
+# Learning rate for the optimizer
+learning_rate: 0.0002
+
+# Type of learning rate scheduler
+lr_scheduler_type: "constant"
+
+# Warmup ratio for learning rate scheduling
+warmup_ratio: 0.03
+
+########################### Evaluation ########################
+
+# Whether to run evaluation on the validation set or not. Will be set to True if evaluation_strategy is different from "no"
+do_eval: True
+
+# The evaluation strategy to adopt during training. Possible values are: no, steps, epoch
+evaluation_strategy: 'steps'
+
+# (int or float, optional) — Number of update steps between two evaluations if evaluation_strategy="steps".
+eval_steps: 25
+
+######################### generation #########################
+
+# Wheter to predict with the generate function. should be true for Seq2Seq models
+predict_with_generate: True
+
+# Generate config CURRENTLY DOES NOT DO ANYTHING
+generation_config: "config/generate_configs/"
+
+###############################################
+#               Memory settings               #
+###############################################
+
+# Flags for using mixed precision training
+fp16: True
+bf16: False
+
+
