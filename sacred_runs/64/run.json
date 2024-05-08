@@ -1,0 +1,123 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.19.0",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.3.0",
+      "transformers==4.39.3",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "generative_re",
+    "repositories": [
+      {
+        "commit": "3881220222ec831abcbe9cc2d3340250ac0d2794",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_351070514c9bdf89dc1b2adf2da5c773.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 607, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 1780, in train\n    return inner_training_loop(\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 2118, in _inner_training_loop\n    tr_loss_step = self.training_step(model, inputs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 3036, in training_step\n    loss = self.compute_loss(model, inputs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 3059, in compute_loss\n    outputs = model(**inputs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1532, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1541, in _call_impl\n    return forward_call(*args, **kwargs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/data_parallel.py\", line 185, in forward\n    outputs = self.parallel_apply(replicas, inputs, module_kwargs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/data_parallel.py\", line 200, in parallel_apply\n    return parallel_apply(replicas, inputs, kwargs, self.device_ids[:len(replicas)])\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/parallel_apply.py\", line 108, in parallel_apply\n    output.reraise()\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/_utils.py\", line 705, in reraise\n    raise exception\n",
+    "torch.cuda.OutOfMemoryError: Caught OutOfMemoryError in replica 0 on device 0.\nOriginal Traceback (most recent call last):\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/parallel_apply.py\", line 83, in _worker\n    output = module(*input, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1532, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1541, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/models/t5/modeling_t5.py\", line 1748, in forward\n    decoder_outputs = self.decoder(\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1532, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1541, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/models/t5/modeling_t5.py\", line 1115, in forward\n    layer_outputs = layer_module(\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1532, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1541, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/models/t5/modeling_t5.py\", line 695, in forward\n    self_attention_outputs = self.layer[0](\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1532, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1541, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/models/t5/modeling_t5.py\", line 602, in forward\n    attention_output = self.SelfAttention(\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1532, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1541, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/models/t5/modeling_t5.py\", line 565, in forward\n    attn_weights = nn.functional.dropout(\n  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/functional.py\", line 1295, in dropout\n    return _VF.dropout_(input, p, training) if inplace else _VF.dropout(input, p, training)\ntorch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 32.00 MiB. GPU \n\n"
+  ],
+  "heartbeat": "2024-04-25T16:31:01.653609",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD EPYC 7V13 64-Core Processor",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        }
+      ]
+    },
+    "hostname": "genllmre.src-azurefreebu.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1061-azure-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.10.14"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [
+      "config/config_T5-11b_cdr.yaml"
+    ],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "config/config_T5-11b_cdr.yaml"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-04-25T16:30:23.742526",
+  "status": "FAILED",
+  "stop_time": "2024-04-25T16:31:01.655062"
+}

@@ -1,0 +1,126 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/lgrootde/Generative-re-tests",
+    "dependencies": [
+      "datasets==2.19.0",
+      "evaluate==0.4.1",
+      "numpy==1.26.4",
+      "sacred==0.8.5",
+      "torch==2.3.0",
+      "transformers==4.39.3",
+      "wasabi==1.1.2"
+    ],
+    "mainfile": "run.py",
+    "name": "generative_re",
+    "repositories": [
+      {
+        "commit": "3881220222ec831abcbe9cc2d3340250ac0d2794",
+        "dirty": true,
+        "url": "https://github.com/ontox-hu/Generative-re-tests"
+      }
+    ],
+    "sources": [
+      [
+        "run.py",
+        "_sources/run_351070514c9bdf89dc1b2adf2da5c773.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/home/lgrootde/Generative-re-tests/run.py\", line 607, in main\n    trainer.train()\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 1780, in train\n    return inner_training_loop(\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 2118, in _inner_training_loop\n    tr_loss_step = self.training_step(model, inputs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/transformers/trainer.py\", line 3045, in training_step\n    self.accelerator.backward(loss)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/accelerate/accelerator.py\", line 2011, in backward\n    self.scaler.scale(loss).backward(**kwargs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/_tensor.py\", line 525, in backward\n    torch.autograd.backward(\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/autograd/__init__.py\", line 267, in backward\n    _engine_run_backward(\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/autograd/graph.py\", line 744, in _engine_run_backward\n    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/autograd/function.py\", line 301, in apply\n    return user_fn(self, *args)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/_functions.py\", line 34, in backward\n    return (None,) + ReduceAddCoalesced.apply(ctx.input_device, ctx.num_inputs, *grad_outputs)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/autograd/function.py\", line 598, in apply\n    return super().apply(*args, **kwargs)  # type: ignore[misc]\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/_functions.py\", line 45, in forward\n    return comm.reduce_add_coalesced(grads_, destination)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/comm.py\", line 141, in reduce_add_coalesced\n    flat_result = reduce_add(flat_tensors, destination)\n",
+    "  File \"/home/lgrootde/.conda/envs/llm_gen_re/lib/python3.10/site-packages/torch/nn/parallel/comm.py\", line 93, in reduce_add\n    result = torch.empty_like(inputs[root_index])\n",
+    "torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 256.00 MiB. GPU \n"
+  ],
+  "heartbeat": "2024-04-25T16:38:50.278359",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD EPYC 7V13 64-Core Processor",
+    "gpus": {
+      "driver_version": "545.23.08",
+      "gpus": [
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        },
+        {
+          "model": "NVIDIA A100 80GB PCIe",
+          "persistence_mode": false,
+          "total_memory": 81920
+        }
+      ]
+    },
+    "hostname": "genllmre.src-azurefreebu.src.surf-hosted.nl",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-1061-azure-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.10.14"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [
+      "config/config_T5-11b_cdr.yaml"
+    ],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "config/config_T5-11b_cdr.yaml"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-04-25T16:38:00.540863",
+  "status": "FAILED",
+  "stop_time": "2024-04-25T16:38:50.279988"
+}
