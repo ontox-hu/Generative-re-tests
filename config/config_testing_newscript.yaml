@@ -44,7 +44,7 @@ trust_remote_code: True
 ########################### DataTraining ###########################
 
 # The name of the dataset to use (via the datasets library).
-datasel_name:
+dataset_name:
 
 # The configuration name of the dataset to use (via the datasets library).
 dataset_config_name:
@@ -54,7 +54,7 @@ train_file: "data/cdr_seq2rel/train.csv"
 
 # An optional input evaluation data file to evaluate with the metrics:
 # rouge and the precision, recall and f1-score for relation extration and named entity recognition
-validation_file: "data/cdr_seq2rel/validation.csv"
+validation_file: "data/cdr_seq2rel/valid.csv"
 
 # An optional input test data file to evaluate with the metrics:
 # rouge and the precision, recall and f1-score for relation extration and named entity recognition
@@ -78,13 +78,13 @@ max_source_length: 1024
 
 # The maximum total sequence length for target text after tokenization. Sequences longer 
 # than this will be truncated, sequences shorter will be padded.
-max_target_length: 128
+max_target_length: 512
 
 # The maximum total sequence length for validation target text after tokenization. Sequences longer 
 # than this will be truncated, sequences shorter will be padded. Will default to `max_target_length`. 
 # This argument is also used to override the ``max_length`` param of ``model.generate``, which is used
 # during ``evaluate`` and ``predict``.
-val_max_target_length: 
+val_max_target_length: 512
 
 # Whether to pad all samples to model maximum sentence length. 
 # If False, will pad the samples dynamically when batching to the maximum length in the batch. More 
@@ -114,8 +114,19 @@ coferent_matching_ner: "strict"
 #                      training parameters                    #
 ###############################################################
 
+#
+do_train: True
+
+# Whether to run evaluation on the validation set or not. Will be set to True if evaluation_strategy is different from "no"
+do_eval: True
+
+# Wheter to run
+do_predict: False
+
+overwrite_output_dir: True
+
 # Local rank for distributed training, -1 for non-distributed
-local_rank: 1
+local_rank: -1
 
 # Batch size per device during training
 per_device_train_batch_size: 4
@@ -139,13 +150,21 @@ weight_decay: 0.001
 num_train_epochs: 5
 
 # Maximum number of training steps
-max_steps: 500
+max_steps: 100
 
 # Frequency of logging training updates
 logging_steps: 10
 
-# Where the logging files go
-logging_dir: "./logs"
+# Where the logging files go. 
+# TensorBoard log directory. Will default to *output_dir/runs/CURRENT_DATETIME_HOSTNAME*.
+logging_dir: 
+
+# The list of integrations to report the results and logs to. 
+# Supported platforms are "azure_ml", "clearml", "codecarbon", 
+# "comet_ml", "dagshub", "dvclive", "flyte", "mlflow", "neptune", 
+# "tensorboard", and "wandb". Use "all" to report to all integrations 
+# installed, "none" for no integrations.
+report_to: "all"
 
 # Frequency of saving the model
 save_steps: 25
@@ -165,9 +184,6 @@ output_dir: "/home/lgrootde/data/generative_re_model_storage_azure/latest_run"
 # Wheter to load the best model at the end (and save it)
 load_best_model_at_end: False
 
-# Best model save location
-best_model_name: "final_model"
-
 # The metric to use to determine which model is the best
 metric_for_best_model: "re_f1"
 
@@ -178,14 +194,7 @@ remove_unused_columns: True
 
 # The configuration for deepspeed.
 # When setting parameters to auto it means that the value is taken from the huggingface config (so this config)
-deepspeed: 
-    zero_optimization:
-        stage: 2
-    gradient_accumulation_steps: "auto"
-    train_micro_batch_size_per_gpu: "auto"
-    gradient_clipping: "auto"
-    fp16:
-        enabled: true
+deepspeed: "config/deepspeed/ds_config_zero3.json"
 
 ################### Padding and truncation ###################
 
@@ -211,9 +220,6 @@ warmup_ratio: 0.03
 
 ########################### Evaluation ########################
 
-# Whether to run evaluation on the validation set or not. Will be set to True if evaluation_strategy is different from "no"
-do_eval: True
-
 # The evaluation strategy to adopt during training. Possible values are: no, steps, epoch
 evaluation_strategy: 'steps'
 
@@ -226,7 +232,7 @@ eval_steps: 25
 predict_with_generate: True
 
 # Generate config CURRENTLY DOES NOT DO ANYTHING
-generation_config: "config/generate_configs/"
+# generation_config: "config/generate_configs/"
 
 ###############################################
 #               Memory settings               #

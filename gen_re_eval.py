@@ -2,6 +2,9 @@ import re
 
 
 def split_on_labels(input_text, labels):
+    # Check if input is actualy text
+    assert type(input_text) == str, f"Input text isn't a string: {input_text}"
+    
     # Escape labels to ensure special characters are treated as literals in regex
     escaped_labels = [re.escape(label) for label in labels]
     # Join the labels into a regex pattern with alternation to match any of them
@@ -32,6 +35,13 @@ def extract_relation_triples(text: str, ner_labels: list[str], re_labels: list[s
     A list of dictionaries
     '''
     ##### Check if text is structered #####
+    
+    # Check if input is actualy text
+    if isinstance(text, list):
+        text = text[0]
+    assert type(text) == str, f"Input text isn't a string: {text}"
+
+    # split text
     split_on_space_text = text.split(" ")
     
     # check if text ends with a relation label
@@ -108,7 +118,6 @@ def map_coferents(group):
 
     return result
 
-@ex.capture
 def ner_metric(predictions: list[str], references: list[str], ner_labels: list[str], re_labels: list[str], coferent_matching: str ="relaxed") -> dict:
     '''
     Calculates the precision, recall and f1-score for document named entity recognition. 
