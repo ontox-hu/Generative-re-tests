@@ -74,7 +74,7 @@ preprocessing_num_workers:
 
 # The maximum total input sequence length after tokenization. Sequences longer 
 # than this will be truncated, sequences shorter will be padded.
-max_source_length: 1024
+max_source_length: 512
 
 # The maximum total sequence length for target text after tokenization. Sequences longer 
 # than this will be truncated, sequences shorter will be padded.
@@ -89,7 +89,7 @@ val_max_target_length: 512
 # Whether to pad all samples to model maximum sentence length. 
 # If False, will pad the samples dynamically when batching to the maximum length in the batch. More 
 # efficient on GPU but very bad for TPU.
-pad_to_max_length: False
+pad_to_max_length: True
 
 # Wheter to use truncation during the preprocessing of the input and output data.
 truncation: True
@@ -121,7 +121,7 @@ do_train: True
 do_eval: True
 
 # Wheter to run
-do_predict: False
+do_predict: True
 
 overwrite_output_dir: False
 
@@ -147,7 +147,7 @@ gradient_checkpointing: True
 weight_decay: 0.001
 
 # Number of training epochs
-num_train_epochs: 5
+num_train_epochs: 6
 
 # Maximum number of training steps
 max_steps: 100
@@ -182,7 +182,7 @@ save_only_model: False
 output_dir: "/home/lgrootde/data/generative_re_model_storage_azure/latest_run"
 
 # Wheter to load the best model at the end (and save it)
-load_best_model_at_end: False
+load_best_model_at_end: True
 
 # The metric to use to determine which model is the best
 metric_for_best_model: "re_f1"
@@ -202,7 +202,7 @@ deepspeed: "config/deepspeed/ds_config_zero3.json"
 ignore_pad_token_for_loss: True
 
 # Groups sequences by length to minimize padding, improving efficiency
-group_by_length: True
+group_by_length: False
 
 ########################### optimizer #########################
 
@@ -230,6 +230,8 @@ eval_steps: 10
 
 # Wheter to predict with the generate function. should be true for Seq2Seq models
 predict_with_generate: True
+
+generation_max_length: 512
 
 # Generate config CURRENTLY DOES NOT DO ANYTHING
 # generation_config: "config/generate_configs/"
