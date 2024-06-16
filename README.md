@@ -39,6 +39,10 @@ Note:
 ---
 # installation:
 
+During the project two enviroments were used. A pip enviroment and a Conda enviroment, this is due to the fact that to make use of [Deepspeed]() a conda enviroment had to be made. 
+
+## recreating pip enviroment
+
 Create environment: 
 ```
 python -m venv venv
@@ -53,7 +57,22 @@ Copy environment
 ```
 pip install -r requirements.txt
 ```
-# Use
+
+## Recreating Conda enviroment (recomanded)
+
+Due to Conda sometimes installing platform specific packages two environment files are availible:
+- `environment.yml`
+- `environment_cross_platoform.yml`
+
+Create environment:
+```
+conda env create -f environment.yml
+```
+
+# Usage
+
+## Without Deepspeed (but with sacred)
+
 The repository holds the code to fine-tune a huggingface seq2seq model. You can fine-tune a model by using the following command:
 
 ```
@@ -61,6 +80,16 @@ python run.py
 ```
 
 this will start the training loop and train according to the config file defined in `run.py`.
+
+you can also define a config file on the commandline:
+
+```
+python run.py with path/to/config.yaml
+```
+
+used configs:
+- [config_T5-L_cdr.yaml](https://github.com/ontox-hu/Generative-re-tests/blob/main/config/config_T5-L_cdr.yaml)
+- [config_T5-3b_cdr.yaml](https://github.com/ontox-hu/Generative-re-tests/blob/main/config/config_T5-3b_cdr.yaml)
 
 The code makes use of the [sacred](https://github.com/IDSIA/sacred) module. This is a module that automaticly saves information about each run, making the experiments more reproducible. 
 
@@ -75,34 +104,11 @@ and you could print the config:
 python run.py print_config
 ```
 
-## Backup Script
-This Bash script is designed to automate the backup process for directories containing checkpoints and sacred runs. It takes two arguments: run_time and sacred_run_number, and performs the following actions:
+## With Deepspeed
 
-1. **Clear Cache**: Clears the cache directory (`~/.cache`) on an Ubuntu system to ensure that cached data does not interfere with the backup process.
-
-2. **Copy Checkpoints**: Scans the directory `Generative-re-tests/results` for directories named according to the convention "checkpoint-****". Copies any found directories to the designated checkpoint directory (`data/generative_re_model_storage_azure/<sacred_run_number>/checkpoints`).
-
-3. **Copy Latest Sacred Run**: Checks the directory `Generative-re-tests/sacred_runs` for the most recently created directory with a name matching sacred_run_number. If found, copies it to `data/generative_re_model_storage_azure/<sacred_run_number>`.
-
-4. **Report**: Prints a report at the end of the script, indicating the number of iterations, directories copied, and the total time elapsed.
-
-### Usage
 ```
-./backup_script.sh <run_time> <sacred_run_number>
+deepspeed run_ds.py path/to/config.yaml
 ```
-- <run_time>: The duration (in seconds) for which the script should run.
-- <sacred_run_number>: The identifier for the sacred run to be backed up.
 
----
-# Installed packages:
-- torch
-- transformers
-- accelerate
-- datasets
-- evaluate
-- rouge_score
-- sentencepiece
-- protobuf
-- ipykernel
-- wasabi
-- sacred
+used configs:
+- [config_T5-11b_cdr_ds.yaml](https://github.com/ontox-hu/Generative-re-tests/blob/main/config/config_T5-11b_cdr_ds.yaml)
