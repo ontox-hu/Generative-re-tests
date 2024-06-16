@@ -1,22 +1,28 @@
-# Seq2rel
-This repository uses the seq2rel method of the paper [A sequence-to-sequence approach for document-level relation extraction](http://arxiv.org/abs/2204.01098) to extract relationships between chemicals and adverse outcomes described in scientific literature. This project was eventually discontinued, in the possibility of picking back up these are the outcomes and current status of the project:
+# Seq2rel: generative relationship extraction 
+This repository employs the seq2rel method from the paper A sequence-to-sequence approach for document-level relation extraction to extract relationships between chemicals and adverse outcomes described in scientific literature. Although the project was eventually discontinued, the following outlines the outcomes and current status:
 
-The end goal of the project was to use the generative relationship extraction method described in the [paper](http://arxiv.org/abs/2204.01098) to extract and label relationships between chemical and adverse outcomes. The notable adventage of this method is that it's able to express discontinous mentions, coferent mentions and N-ary relationships.
+The project's ultimate objective was to utilize the generative relationship extraction method described in the paper to extract and label relationships between chemicals and adverse outcomes. The notable advantage of this method is its ability to express discontinuous mentions, coreferent mentions, and N-ary relationships.
 
 img
 
-The plan of this project was to first reproduce the results of the [paper](http://arxiv.org/abs/2204.01098) by fine-tuning a Huggingface model on the same dataset. Then a dataset would be made that would match the relationship annotation schema that we want to use. A possible method to determine the relationship annationschema was to use [Ensemble Biclustering (EBC)](https://pubmed.ncbi.nlm.nih.gov/26219079/). EBC would show the different relationship groups within the corpus that can then be manually labeled. After the datasets completion the model would be trained on this new dataset.  
+The plan for this project was as follows:
+
+1. Reproduce the results of the paper by fine-tuning a Huggingface model on the same dataset.
+2. Create a dataset matching the desired relationship annotation schema.
+3. Determine the relationship annotation schema, potentially using Ensemble Biclustering (EBC). EBC would identify different relationship groups within the corpus for manual labeling.
+4. Train the model on this new dataset.
 
 ```mermaid
-graph TD
-    A[Reproduce Results on Huggingface Model] --> B[Determine Relationship Annotation Schema]
-    B --> C[Create Own Dataset]
-    C --> D[Fine-tune on Own Dataset]
+graph LR
+    A["Reproduce results with<br> Huggingface model"] --> B["Determine relationship<br> annotation schema"]
+    B --> C["Create own dataset"]
+    C --> D["Fine-tune on<br> own dataset"]
 ```
+---
 
-The status of this project when it was discontinued was that it was at the end of reproducing the results with a huggingface model. More specificly, Two training script were made that could train a [google/T5](https://huggingface.co/docs/transformers/model_doc/t5) model on the [CDR dataset in seq2rel format](https://github.com/JohnGiorgi/seq2rel-ds). The first training script ([run.py](https://github.com/ontox-hu/Generative-re-tests/blob/main/run.py)) was implented using [sacred](https://github.com/IDSIA/sacred) to make the experiments more reproducible, but didn't closely follow huggingface programming convention. The second training script ([run_ds.py](https://github.com/ontox-hu/Generative-re-tests/blob/main/run_ds.py)) was made to enable distributed training with [Deepspeed](https://github.com/microsoft/DeepSpeed). 
+The status of the project at the time of discontinuation was the completion of reproducing results with a Huggingface model. Specifically, two training scripts were created to train a google/T5 model on the CDR dataset in seq2rel format. The first training script (run.py) was implemented using sacred to enhance experiment reproducibility, although it didn't closely follow Huggingface programming conventions. The second training script (run_ds.py) enabled distributed training with Deepspeed.
 
-Because the models output was quite novel a custom evaluation method needed to be made. This method needed to go from text structerd according to the annotation schema to relationship triples, while taking into account coferent mentions. The status on this is that the method works for relationschip extraction but the measures for entity recognition still fall out to low. The evaluation method is defined in [this script](https://github.com/ontox-hu/Generative-re-tests/blob/main/gen_re_eval.py) and explained and tested in [this notebook](https://github.com/ontox-hu/Generative-re-tests/blob/main/notebooks/testing_evaluation.ipynb).
+Due to the novel output of the models, a custom evaluation method was necessary. This method needed to convert text structured according to the annotation schema into relationship triples, accounting for coreferent mentions. The method works for relationship extraction, but entity recognition measures are still suboptimal. The evaluation method is defined in this script and is explained and tested in this notebook.
 
 The results after fine-tuning on the CDR dataset:
 | Date | script | Model | RE Precision | RE Recall | RE F1-score | unstructerd |
