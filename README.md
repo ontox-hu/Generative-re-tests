@@ -71,6 +71,9 @@ conda env create -f environment.yml
 
 # Usage
 
+The repository has two training scripts: `run.py` and `run_ds.py`. `run.py` was the initial script, it has an implementation of [sacred](https://github.com/IDSIA/sacred) which makes the experiments more reproducible. The information of these experiments can be found in [sacred_runs](https://github.com/ontox-hu/Generative-re-tests/tree/main/sacred_runs). At the end of this line of experiments [DeepSpeed](https://github.com/microsoft/DeepSpeed) was being implemented. To make use of [DeepSpeed](https://github.com/microsoft/DeepSpeed) `run_ds.py` was created. run_ds.py is a modified version of this [example huggingface training script](https://github.com/huggingface/transformers/blob/main/examples/pytorch/translation/run_translation.py).
+
+
 ## Without Deepspeed (but with sacred)
 
 The repository holds the code to fine-tune a huggingface seq2seq model. You can fine-tune a model by using the following command:
